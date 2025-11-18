@@ -136,6 +136,7 @@
     console.log("authForm:", authForm);
     const toggleLink = document.getElementById("toggleForm");
     console.log("toggleLink:", toggleLink);
+    
     const nameFields = document.getElementById("nameFields");
     console.log("nameFields:", nameFields);
 
@@ -184,7 +185,10 @@
       if (isLogin) {
         // 🔑 Login: check if user exists in Firestore
         const q = query(collection(db, "users"), where("email", "==", email), where("password", "==", password));
+        console.log("qLogin:",q);
+
         const querySnapshot = await getDocs(q);
+        console.log("querySnapshot:", querySnapshot);
 
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data(); // get the user object
