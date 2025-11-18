@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Sign Up</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-container {
+      background: white;
+      width: 25%;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .login-container h2 {
+      margin-bottom: 25px;
+      color: #0077b6;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .btn {
+      width: 100%;
+      height: 3rem;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 1rem;
+    }
+
+    .btn:hover {
+      background: #023e8a;
+    }
+
+    .toggle-link {
+      margin-top: 1rem;
+      font-size: 14px;
+      color: #0077b6;
+      cursor: pointer;
+      display: block;
+    }
+
+    .toggle-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-container">
+    <h2 id="formTitle">Login</h2>
+    <form id="authForm">
+
+      <!--firstName && lastName-->
+
+      <div class="input-group" id="nameFields" style="display: none;">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" placeholder="Enter first name" />
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" placeholder="Enter last name" />
+      </div>
+
+      <!--email-->
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email" required />
+      </div>
+
+      <!--password-->
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required />
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Login</button>
+    </form>
+
+    <span class="toggle-link" id="toggleForm">Don't have an account? Sign up</span>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCwZvlhgluWctDaCy_hEiVOsDO9AbVLpnA",
+      authDomain: "web-travel-19d2c.firebaseapp.com",
+      projectId: "web-travel-19d2c",
+      storageBucket: "web-travel-19d2c.firebasestorage.app",
+      messagingSenderId: "850178211857",
+      appId: "1:850178211857:web:c22077d5d1c892f7b071b0",
+      measurementId: "G-JF6LPNDYF9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const authForm = document.getElementById("authForm");
+    console.log("authForm:", authForm);
+    const toggleLink = document.getElementById("toggleForm");
+    console.log("toggleLink:", toggleLink);
+    const nameFields = document.getElementById("nameFields");
+    console.log("nameFields:", nameFields);
+
+    const formTitle = document.getElementById("formTitle");
+    console.log("formTitle:", formTitle);
+
+    const submitBtn = document.getElementById("submitBtn");
+
+    let isLogin = true; // track current form state
+    console.log("isLogin:", isLogin);
+
+
+    // Toggle between Login and Sign Up
+    toggleLink.addEventListener("click", () => {
+      isLogin = !isLogin;
+
+      if (isLogin) {
+        nameFields.style.display = "none";
+        formTitle.textContent = "Login";
+        submitBtn.textContent = "Login";
+        toggleLink.textContent = "Don't have an account? Sign up";
+      } else {
+        nameFields.style.display = "block";
+        formTitle.textContent = "Sign Up";
+        submitBtn.textContent = "Sign Up";
+        toggleLink.textContent = "Already have an account? Login";
+      }
+
+      console.log("nameFields:", nameFields);
+      console.log("formTitle:", formTitle);
+    });
+
+    authForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+
+      if (!email || !password || (!isLogin && (!firstName || !lastName))) {
+        alert("⚠️ Please fill in all fields!");
+        return;
+      }
+
+      if (isLogin) {
+        // 🔑 Login: check if user exists in Firestore
+        const q = query(collection(db, "users"), where("email", "==", email), where("password", "==", password));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const userData = querySnapshot.docs[0].data(); // get the user object
+          localStorage.setItem("loggedInUser", JSON.stringify(userData)); // store full object
+
+          alert("✅ Login successful!");
+          window.location.href = "../home.html"; // redirect to home
+          authForm.reset();
+        } else {
+          alert("❌ Invalid email or password!");
+        }
+      } else {
+        // 📝 Sign Up: add user to Firestore
+        try {
+          await addDoc(collection(db, "users"), {
+            firstName,
+            lastName,
+            email,
+            password,
+            createdAt: new Date()
+          });
+          alert("✅ Sign up successful! You can now login.");
+          authForm.reset();
+          toggleLink.click(); // switch to login
+        } catch (error) {
+          console.error("Error signing up:", error);
+          alert("❌ Error: " + error.message);
+        }
+      }
+    });
+
+  </script>
+</body>
+
+</html>

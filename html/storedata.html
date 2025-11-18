@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Data</title>
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<style>
+    .mainText {
+        margin-top: 8rem;
+    }
+
+    .mainText h1 {
+        font-size: 3rem;
+        text-transform: uppercase;
+        font-family: sans-serif;
+        color: blue;
+    }
+
+    #placeData {
+        display: grid;
+        grid-template-columns: repeat(3, 20%);
+        gap: 4rem;
+        justify-content: center;
+        margin-top: 8rem;
+        position: relative;
+    }
+
+    .inforData {
+        background-color: #fff;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .inforData:hover {
+        transform: scale(1.03) translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .inforData img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .favorite-card {
+        padding: 1rem;
+        margin-top: 2rem;
+    }
+
+    h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    p {
+        margin: 0.3rem 0;
+        color: #555;
+        font-size: 0.9rem;
+    }
+
+    .myDIcon {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+    }
+
+    .myDIcon i {
+        font-size: 1.4rem;
+        padding-right: 1.2rem;
+        transition: 0.2s;
+    }
+
+    .myDIcon i:hover {
+        color: red;
+    }
+
+    .myArrow {
+        margin: 3rem;
+        cursor: pointer;
+    }
+
+    .myArrow i {
+        color: red;
+        font-size: 3rem;
+    }
+</style>
+
+<body>
+
+<header>
+    <div id="header-placeholder"></div>
+</header>
+
+<main>
+
+    <!-- BACK BUTTON -->
+    <div class="myArrow">
+        <i class="fa-solid fa-arrow-left"></i>
+    </div>
+
+    <section class="mainText">
+        <h1>Your Favorite Places</h1>
+        <div id="placeData"></div>
+    </section>
+
+</main>
+
+<footer id="footer"></footer>
+
+</body>
+
+<script src="../js/home.js"></script>
+
+<script type="module">
+
+    // Load Favorite Data
+    const placeDataDiv = document.getElementById("placeData");
+    const favoritePlaces = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
+
+    if (favoritePlaces.length > 0) {
+        placeDataDiv.innerHTML = favoritePlaces.map(place => `
+        
+        <section class="inforData">
+
+            <!-- Delete Icon -->
+            <div class="myDIcon" data-id="${place.id}">
+                <i class="fa-solid fa-trash"></i>
+            </div>
+
+            <img src="${place.image || place.image_placeholder}" alt="${place.name}">
+
+            <div class="favorite-card">
+                <h3>${place.name}</h3>
+                <p>${place.description || ""}</p>
+                <p>${place.address || ""}</p>
+                <p>${place.focus || ""}</p>
+                <p>Cuisine: ${place.cuisine || ""}</p>
+                <p>Description: ${place.short_description || ""}</p>
+            </div>
+
+        </section>
+
+        `).join('');
+    } else {
+        placeDataDiv.innerHTML = "<p>No favorite places selected yet.</p>";
+    }
+
+    // Delete Favorite
+    const deleteButtons = document.querySelectorAll(".myDIcon");
+
+    deleteButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-id");
+
+            const updatedFavorites = favoritePlaces.filter(place => place.id !== id);
+
+            localStorage.setItem("favoritePlaces", JSON.stringify(updatedFavorites));
+
+            window.location.reload();
+        });
+    });
+
+
+    // ======================
+    // BACK BUTTON (FIXED)
+    // ======================
+    document.querySelector(".myArrow").addEventListener("click", () => {
+
+        const lastProvinceId = localStorage.getItem("lastProvinceId");
+
+        if (!lastProvinceId) {
+            alert("No stored province found.");
+            return;
+        }
+
+        window.location.href = `provincedetail.html?id=${lastProvinceId}`;
+    });
+
+</script>
+
+</html>

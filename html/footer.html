@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>footer</title>
+
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+<style>
+    /*footer's font*/
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+
+    footer {
+        font-family: "Roboto Condensed", sans-serif;
+    }
+
+    .footerElement {
+        width: 100vw;
+        background-color: #7B9CFE;
+        color: #000000;
+        padding: 2rem;
+        margin-top: 5rem;
+    }
+
+    .email,
+    .location,
+    .phone {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-top: 2rem;
+        cursor: pointer;
+        transition: 2s;
+    }
+
+
+    .email i,
+    .location i,
+    .phone i {
+        font-size: 1.7rem;
+    }
+
+    .email:hover,
+    .location:hover,
+    .phone:hover {
+        color: white;
+    }
+
+    .footerElement h3 {
+        font-size: 2.5rem;
+    }
+
+    .followUsElement {
+        margin-right: 8rem;
+        margin-bottom: 8rem;
+
+    }
+
+    .social-media {
+        font-size: 2rem;
+        text-align: center;
+        transition: 0.5s;
+        cursor: pointer;
+    }
+
+    .social-media i:hover {
+        color: #fff;
+    }
+</style>
+
+<body>
+
+    <footer class="footerElement">
+        <h3>Contact us</h3>
+        <div style="display: flex; justify-content: space-between;">
+            <address>
+
+                <div class="email">
+
+                    <div>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+
+                    <div class="emailText">
+                        <h4>Ravid99@gmail.com</h4>
+                    </div>
+
+                </div>
+
+
+                <div class="location">
+
+                    <div>
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div class="locationText">
+                        <h4>Address: #33 St 606, Sangkat Beoung kok II,<br>
+                            Khan Toul Kork,Phnom Penh, Cambodia</h4>
+                    </div>
+
+                </div>
+
+                <div class="phone">
+
+                    <div>
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+
+                    <div class="phoneText">
+                        <h4>
+                            Phone number: 096 880 6363
+                        </h4>
+                    </div>
+
+                </div>
+
+            </address>
+
+            <div class="followUsElement">
+
+                <div class="followText">
+                    <h3>Follow us:</h3>
+                </div>
+
+                <div class="social-media">
+
+                    <i class="fa-brands fa-facebook"></i>
+                    <i class="fa-brands fa-twitter"></i>
+                    <i class="fa-brands fa-instagram"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+</body>
+
+</html>

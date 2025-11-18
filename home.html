@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambodia Tourist</title>
+    <link rel="shortcut icon" href="./images/khmer flag.jpg" type="image/x-icon">
+    
+    <link rel="stylesheet" href="./css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+<body>
+
+    <!--header-->
+    <div id="header-placeholder"></div>
+
+    <main>
+
+        <section class="slider-container">
+            <div class="imageSlider" id="slides">
+                <img src="./images/new air 3.png" alt="slider">
+                <img src="./images/image.png" alt="slider">
+                <img src="./images/angkor toch.jpg" alt="slider">
+                <img src="./images/phnom penh.jpg" alt="slider">
+                <img src="./images/kampot.jpg" alt="slider">
+            </div>
+        </section>
+
+        <section class="twoSection">
+            <div class="khmer-flag">
+                <img src="./images/khmer flag.jpg">
+            </div>
+
+            <div class="khmerTexts">
+                <h2>
+                    welcome to <br>
+                    cambodia
+                </h2>
+            </div>
+        </section>
+
+        <section class="desTexts">
+            <h3>
+                top <span style="color: blue;">destinations</span>
+            </h3>
+
+            <div class="popular-city">
+
+                <div id="provices"></div>
+
+                    <!--
+                      
+                          <div class="phnomPenh" id="myPhnomPenh" style="cursor: pointer;">
+                        <img src="./images/phnom penh 2.jpg">
+                        <h3>Phnom Penh</h3>
+                    </div>
+
+                    <div class="siemReap" id="siemReapNav">
+                        <img src="./images/angkor toch.jpg">
+                        <h3>Siem Reap</h3>
+                    </div>
+
+                    <div style="cursor: pointer;" class="kohRong">
+                        <img src="./images/koh rong.jpg">
+                        <h3>SHN</h3>
+                    </div>
+                      
+                    -->
+
+                </div>
+            </div>
+        </section>
+
+        <section class="cultureInfor">
+
+            <h4>
+                culture
+            </h4>
+
+            <div class="myCultureInfor">
+
+                <div class="apsara-image">
+                    <img src="./images/apsara2.jpg">
+                </div>
+
+                <div class="cultureDetail">
+
+                    <article class="text-detail">
+                        <p>
+                            <span style="color: red; font-size: 3rem;">Cambodia’s culture </span>is <br> deeply
+                            spiritual,
+                            family- <br> oriented, and artistic, <br> with strong
+                            traditions in <br>religion, architecture, <br> dance, and cuisine. It is <br> a blend of
+                            ancient <br> heritage
+                            and living <br> traditions that continue <br> to shape everyday life.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="hisInfor">
+            <h4>
+                history
+            </h4>
+
+            <div class="myHisInfor">
+
+                <div class="his-image">
+                    <img src="./images/his-cam.avif">
+                </div>
+
+                <div class="cultureDetail">
+
+                    <article class="text-detail2">
+                        <p>
+                            <span style="color: red; font-size: 3rem;">Cambodia’s history</span> <br> shines with the
+                            glory of <br> the
+                            Khmer Empire and <br>Angkor Wat, but also <br>
+                            carries deep scars <br> from colonialism, war, <br> and the Khmer Rouge <br> genocide.
+                            Today, <br> the nation is
+                            rebuilding <br> and proudly <br> preserving its cultural <br> heritage while moving <br>
+                            toward modernization.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="closeBtn">&times;</span>
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <div>
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" placeholder="Enter email" required>
+                    </div>
+                    <div>
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="submitBtn">Login</button>
+                </form>
+            </div>
+        </div>
+
+
+    </main>
+
+    <footer id="footer">
+    </footer>
+
+</body>
+<script src="./js/home.js"></script>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyCwZvlhgluWctDaCy_hEiVOsDO9AbVLpnA",
+    authDomain: "web-travel-19d2c.firebaseapp.com",
+    projectId: "web-travel-19d2c",
+    storageBucket: "web-travel-19d2c.firebasestorage.app",
+    messagingSenderId: "850178211857",
+    appId: "1:850178211857:web:c22077d5d1c892f7b071b0",
+    measurementId: "G-JF6LPNDYF9"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
+
+const camboPro = document.getElementById("provices");
+// Simple login check using localStorage
+function isUserLoggedIn() {
+    return !!localStorage.getItem("loggedInUser");
+}
+
+async function loadProvinces() {
+    try {
+        // Optional: filter top provinces
+        const q = query(
+            collection(db, "provincesCambodia"),
+            where("name", "in", ["Phnom Penh", "Siem Reap", "Sihanoukville (Preah Sihanouk)"])
+        );
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+
+            const div = document.createElement("div");
+            div.classList.add("province-card");
+
+                div.innerHTML = `
+                <section data-aos="flip-down">
+                    <img src="${data.image}" alt="${data.name}">
+                    <div class="content">
+                        <h3>${data.name}</h3>
+                        <p>${data.description}</p>
+                    </div>
+                </section>
+            `;
+
+            div.addEventListener("click", () => {
+                if (isUserLoggedIn()) {
+                    // Logged in → go to detail page
+                    window.location.href = `html/provincedetail.html?id=${data.provinceId}`;
+                } else {
+                    // Not logged in → alert and redirect
+                    alert("Please log in to view province details.");
+                    window.location.href = "../html/login.html";
+                }
+            });
+
+            camboPro.appendChild(div);
+        });
+
+    } catch (err) {
+        console.error("❌ Error loading provinces:", err);
+    }
+}
+
+loadProvinces();
+</script>
+</html>

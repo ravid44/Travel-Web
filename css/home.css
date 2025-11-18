@@ -1,0 +1,1003 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* hide horizontal overflow and to close scroll bar on the bottom */
+  font-family: Arial, sans-serif;
+}
+
+/*main font*/
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+main {
+  font-family: "Lato", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.header-text h1 {
+  font-size: 2rem;
+  color: red;
+}
+
+.header-text b {
+  color: blue;
+}
+
+.myHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 20px;
+  margin-right: 50px;
+  margin-top: -0.4rem;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+nav ul {
+  list-style-type: none;
+  display: flex;
+  gap: 2rem;
+}
+
+nav ul li {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.twoSection {
+  margin-top: 25rem;
+}
+
+/* Slider container */
+.slider-container {
+  width: 100vw;
+  height: 100vh; /* full screen height */
+  position: relative;
+  overflow: hidden; /* hide images that slide out */
+}
+
+/* Slider images in row */
+.imageSlider {
+  display: flex;
+  transition: transform 1s ease-in-out;
+  width: 100%;
+  height: 100%;
+}
+
+/* Each image */
+.imageSlider img {
+  width: 100vw;   /* full viewport width */
+  height: 90vh;  /* full viewport height */
+  flex-shrink: 0;
+  object-fit: cover; /* maintain aspect ratio while covering */
+}
+
+.textNavbar li {
+  transition: 0.2s;
+}
+
+.textNavbar li:hover {
+  color: blue;
+}
+
+.khmer-flag img {
+  width: 40%;
+}
+
+.khmerTexts h2 {
+  text-transform: uppercase;
+  font-size: 4.5rem;
+  margin-right: 5rem;
+}
+
+.twoSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
+}
+
+.content{
+    margin-top: 4rem;
+}
+
+.desTexts h3,
+.cultureInfor h3 {
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.myThreeCity {
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+  margin-top: 3rem;
+}
+
+.phnomPenh img {
+  border-radius: 2rem;
+  height: 40vh;
+}
+
+.phnomPenh h3 {
+  font-size: 2rem;
+  margin-top: 1rem;
+}
+
+.siemReap {
+  cursor: pointer;
+}
+
+.siemReap h3 {
+  font-size: 2rem;
+  margin-right: 20rem;
+  margin-top: 1rem;
+}
+
+.siemReap img {
+  width: 48%;
+  height: 40vh;
+  object-fit: cover;
+  border-radius: 2rem;
+}
+
+.kohRong {
+  margin-left: -21rem;
+}
+
+.kohRong img {
+  border-radius: 2rem;
+  height: 40vh;
+  width: 105%;
+  object-fit: cover;
+}
+
+.kohRong h3 {
+  margin-top: 1rem;
+}
+
+.searchIcon i {
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.searchIcon i:hover {
+  background-color: #bab1eb;
+  width: 100%;
+  padding: 10px;
+  border-radius: 100%;
+  color: #fcfcfc;
+}
+
+.cultureInfor h4,
+.hisInfor h4 {
+  text-transform: uppercase;
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 5rem;
+}
+
+.text-detail p {
+  font-size: 2.5rem;
+  text-align: center;
+  font-weight: bold;
+  margin-right: 10rem;
+}
+
+.text-detail2 p {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-right: 20rem;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.apsara-image img {
+  border-radius: 3rem;
+  margin-left: 10rem;
+  width: 600px;
+  height: 600px;
+}
+
+.myCultureInfor {
+  margin-bottom: 10rem;
+}
+
+.myHisInfor,
+.myCultureInfor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 8rem;
+  gap: 30rem;
+}
+
+.his-image img {
+  border-radius: 3rem;
+  width: 600px;
+  height: 600px;
+  margin-right: 2rem;
+}
+
+.headerElement {
+  width: 100vw;
+  padding: 2rem;
+}
+
+.header-image {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5rem;
+}
+
+.header-image img {
+  width: 90vw;
+  height: 90vh;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.explor-text h1 {
+  font-weight: bold;
+  text-align: center;
+  font-size: 3rem;
+}
+
+.explor-text p {
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+.camText {
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}
+
+.camText h3 {
+  text-align: center;
+  color: red;
+  font-size: 2.5rem;
+}
+
+.desImg {
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  gap: 4rem;
+  justify-content: center;
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.desImg img {
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.img1 img {
+  height: 30vh;
+  object-fit: cover;
+  width: 100%;
+}
+
+.desImg h3 {
+  font-size: 2rem;
+  margin: 1.5rem;
+  text-align: center;
+}
+
+.header-image img {
+  width: 100vw;
+  object-fit: cover;
+}
+
+.myInformation {
+  display: flex;
+  flex-direction: row;
+  gap: 10rem; /* smaller gap instead of 20rem */
+  justify-content: center;
+  align-items: stretch; /* make all children same height */
+  margin-left: 5rem;
+}
+
+/*
+.locationInfor {
+  width: 100%;
+  height: 30vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ed4f4f;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+*/
+
+.location-contact {
+  flex: 1; /* each takes equal width */
+  height: 30vh; /* equal height */
+  background-color: #ed4f4f;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: -8rem;
+}
+
+.phone-contact,
+.email-contact {
+  flex: 1; /* each takes equal width */
+  height: 30vh; /* equal height */
+  background-color: #ed4f4f;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.phone-contact:hover,
+.email-contact:hover,
+.location-contact:hover {
+  background-color: #ed8989;
+}
+
+.phone-contact i,
+.email-contact i,
+.location-contact i {
+  font-size: 5rem;
+  color: #fff;
+}
+
+.phone-contact h3,
+.email-contact h3,
+.location-contact h3 {
+  font-size: 2rem;
+  color: #fff;
+  text-align: center;
+}
+
+.text-cover h1 {
+  text-transform: uppercase;
+  font-size: 10rem;
+  color: #fff;
+  font-weight: bold;
+  font-family: sans-serif;
+}
+
+.ppImg {
+  position: relative;
+}
+
+.text-cover {
+  position: absolute;
+  top: 30%;
+  left: 25%;
+  text-align: center;
+}
+
+.myInformation {
+  position: absolute;
+  top: 70%;
+  left: 10%;
+}
+
+iframe {
+  margin-top: 2rem;
+}
+
+/* Popup overlay & box */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.popup-box {
+  background: #fff;
+  box-shadow: 5px 5px 30px rgb(67, 107, 239);
+  padding: 5rem;
+  border-radius: 10px;
+  width: 30%;
+  height: 60%;
+  text-align: center;
+}
+.popup-box input,
+.popup-box select,
+.popup-box button {
+  width: 100%;
+  padding: 0.6rem;
+  margin: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+.popup-box button {
+  background: blue;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+.popup-box button:hover {
+  background: darkblue;
+}
+
+/* Custom dropdown for countries with flags */
+.custom-select {
+  position: relative;
+  user-select: none;
+  margin: 1rem;
+  width: 100%;
+}
+.select-selected {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.select-items {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  flex-direction: column;
+}
+.select-items div {
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.select-items div:hover {
+  background: #f1f1f1;
+}
+.select-items img,
+.select-selected img {
+  width: 20px;
+  height: 14px;
+}
+
+.searchSpot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.spotText h2 {
+  font-size: 2rem;
+}
+
+.search-input input {
+  width: 50vw;
+  padding-right: 20rem;
+  border: 0;
+  background-color: #d9d9d9;
+  padding: 15px;
+  border-radius: 2.5rem;
+  font-size: 1.5rem;
+}
+
+::placeholder {
+  padding: 5px;
+  color: black;
+}
+
+.searchSpot {
+  display: none;
+}
+
+.close-search {
+  display: flex;
+}
+
+.myHeaderIcon {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.myArrow {
+  cursor: pointer;
+}
+
+.myArrow i {
+  color: blue;
+  font-size: 2.5rem;
+}
+
+.myBars {
+  cursor: pointer;
+}
+
+.myBars i {
+  font-size: 3rem;
+  transition: 0.3s;
+}
+
+.myBars i:hover {
+  color: blue;
+}
+
+.header-image3 img {
+  width: 100vw;
+  height: 90vh;
+  object-fit: cover;
+}
+
+.place-text {
+  text-align: center;
+  margin-top: 8rem;
+  line-height: 5rem;
+}
+
+.place-text h1 {
+  text-transform: uppercase;
+  font-size: 3rem;
+}
+
+.place-text h3 {
+  font-size: 2rem;
+}
+
+.myTemples {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 1.2rem;
+  margin-top: 4rem;
+}
+
+.temple1 img,
+.temple2 img,
+.temple3 img,
+.temple4 img,
+.temple5 img,
+.temple6 img {
+  width: 100%;
+  border-radius: 15%;
+  height: 30rem;
+  object-fit: cover;
+}
+
+.temple1 h4,
+.temple2 h4,
+.temple3 h4,
+.temple4 h4,
+.temple5 h4,
+.temple6 h4 {
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 10%;
+}
+
+.text-spot,
+.funny-spot,
+.cultureText,
+.location {
+  margin-top: 8rem;
+}
+
+.text-spot h3,
+.funny-spot h3,
+.cultureText h3,
+.location h3 {
+  text-align: center;
+  font-size: 2rem;
+}
+
+.activity1 img,
+.activity2 img,
+.activity3 img,
+.activity4 img,
+.activity5 img,
+.activity6 img {
+  width: 100%;
+  height: 20rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.activities-image,
+.funnyActivitiesImg,
+.cultureImg {
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  column-gap: 5rem;
+  row-gap: 3rem;
+  justify-content: center;
+  margin-top: 8rem;
+  text-align: center;
+}
+
+.activity1 h4,
+.activity2 h4,
+.activity3 h4,
+.activity4 h4,
+.activity5 h4,
+.activity6 h4 {
+  font-size: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.three-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  margin-bottom: 3rem;
+  display: none;
+}
+
+.coffee-menu,
+.restaurant,
+.hotel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.coffee-menu:hover,
+.restaurant:hover,
+.hotel:hover {
+  color: blue;
+}
+
+.coffee-menu i,
+.restaurant i,
+.hotel i {
+  font-size: 2rem;
+}
+
+.coffee-menu h3,
+.restaurant h3,
+.hotel h3 {
+  font-size: 2rem;
+}
+
+.closeBar {
+  display: flex;
+}
+
+.kohRongImg img {
+  width: 100vw;
+  height: 80vh;
+  object-fit: cover;
+}
+
+.kohRongInfo,
+.kohrong-activities,
+.locationInfor {
+  margin-top: 8rem;
+  margin-bottom: 4rem;
+}
+
+.kohRongInfo h3,
+.kohrong-activities h3,
+.locationInfor h3 {
+  text-align: center;
+  font-size: 3rem;
+}
+
+.allBeaches,
+.activitiesSpot {
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  justify-content: center;
+  gap: 4rem;
+}
+
+.beaches,
+.beaches1,
+.beaches2,
+.beaches3,
+.beaches4,
+.beaches5,
+.beaches6,
+.beaches7,
+.myActivities {
+  background-color: rgb(254, 255, 255);
+  width: 100%;
+  height: 23rem;
+  border-radius: 1rem;
+  border: 3px solid rgb(245, 246, 247);
+  box-shadow: 5px 5px 20px rgb(162, 200, 238);
+  cursor: pointer;
+}
+
+.beaches2 img,
+.beaches img,
+.beaches3 img,
+.beaches4 img,
+.beaches5 img,
+.beaches6 img,
+.beaches7 img,
+.myActivities img {
+  width: 100%;
+  height: 18rem;
+  object-fit: cover;
+  border-radius: 1rem;
+  padding: 3%;
+}
+
+.beachInfo,
+.beachInfo1,
+.beachInfo2,
+.beachInfo3,
+.beachInfo4,
+.beachInfo5,
+.beachInfo6,
+.beachInfo7,
+.activitiesInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.beachInfo i,
+.beachInfo1 i,
+.beachInfo2 i,
+.beachInfo3 i,
+.beachInfo4 i,
+.beachInfo5 i,
+.beachInfo6 i,
+.beachInfo7 i,
+.activitiesInfo i {
+  font-size: 2rem;
+  color: rgb(35, 125, 228);
+}
+
+.beachInfo h4,
+.beachInfo1 h4,
+.beachInfo2 h4,
+.beachInfo3 h4,
+.beachInfo4 h4,
+.beachInfo5 h4,
+.beachInfo6 h4,
+.beachInfo7 h4,
+.activitiesInfo h4 {
+  font-size: 2rem;
+}
+
+.kohRongDetail {
+  margin-top: 8rem;
+}
+
+.kohRongDetail p {
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+.phnomPenhPage img {
+  width: 100vw;
+  height: 80vh;
+  object-fit: cover;
+}
+
+.phnomPenhSpot,
+.pp-tourists {
+  margin-top: 8rem;
+}
+
+.phnomPenhSpot h3,
+.pp-tourists h3 {
+  text-align: center;
+  font-size: 3rem;
+}
+
+.phnomPenhPlaces,
+.phnomPenhPlaces2,
+.phnomPenhPlaces3 {
+  position: relative;
+}
+
+.phnomPenhPlaces img {
+  width: 90%;
+  height: 30rem;
+  border-radius: 2rem;
+  object-fit: cover;
+}
+
+.phnomPenhPlaces3 img {
+  width: 90%;
+  height: 30rem;
+  border-radius: 2rem;
+  object-fit: cover;
+}
+
+.phnomPenhPlaces2 img {
+  width: 90%;
+  height: 30rem;
+  border-radius: 2rem;
+  object-fit: cover;
+}
+
+.phnomPenhElement {
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  gap: 3rem;
+  justify-content: center;
+  margin-top: 4rem;
+}
+
+.textInfor {
+  position: absolute;
+  top: 45%;
+  margin-left: 3rem;
+}
+
+.textInfor2 {
+  position: absolute;
+  top: 45%;
+  margin-left: 5rem;
+}
+.textInfor h4,
+.textInfor2 h4 {
+  font-size: 3rem;
+  color: #ffffff;
+  font-weight: bolder;
+  text-shadow: 3px 3px black;
+}
+
+.spot img {
+  width: 100%;
+  object-fit: cover;
+  height: 20rem;
+  border-radius: 0.5rem;
+}
+
+.spot h4 {
+  font-size: 2rem;
+  padding-top: 5%;
+}
+
+.pp-spot {
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  gap: 3rem;
+  justify-content: center;
+  margin-top: 4rem;
+  text-align: center;
+}
+
+#myTopDes {
+  display: grid;
+  grid-template-columns: repeat(3, 30%);
+  justify-content: center;
+  text-align: center;
+  padding: 5%;
+  cursor: pointer;
+}
+
+#myTopDes img {
+  width: 90%;
+  height: 30rem;
+  border-radius: 3rem;
+  object-fit: cover;
+}
+
+/*
+#provices{
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  align-items: center;
+  gap: 3rem;
+  
+}
+
+.province-card{
+   background-color: #d9d9d9;
+}
+
+.province-card img{
+  width: 100%;
+}
+*/
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+#provices {
+  display: grid;
+  grid-template-columns: repeat(3, 25%);
+  gap: 5rem;
+  justify-content: center;
+  padding: 0;
+}
+.province-card {
+  background: white;
+  border-radius: 8px;
+  padding: 10%;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+.province-card:hover {
+  transform: translateY(-5px);
+}
+.province-card img {
+  width: 100%;
+  height: 15rem;
+  object-fit: cover;
+  cursor: pointer;
+}
+.province-card .content {
+  padding: 15px;
+}
+.province-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+}
+.province-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.header-image{
+    width: 100vw;
+}
+
+.des-text{
+    margin-bottom: 4rem;
+}
+
+.des-text h1{
+    font-size: 3rem;
+}
+
+
+
+
+

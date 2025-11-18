@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siem Reap Hotels</title>
+
+    <link rel="shortcut icon" href="../images/khmer flag.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="../css/siemreap.css">
+
+</head>
+
+<body>
+
+    <main>
+        <div class="header-image">
+            <img src="https://i.pinimg.com/1200x/cd/7d/a8/cd7da8de047f94e62521a8f567036f3d.jpg">
+        </div>
+
+        <div class="hotelText">
+            <h1>
+                the best hotels
+            </h1>
+
+        </div>
+        <section id="srHotels">
+
+        </section>
+    </main>
+</body>
+<script type="module">
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+    import { getFirestore, doc, updateDoc, getDocs, collection }
+        from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyCwZvlhgluWctDaCy_hEiVOsDO9AbVLpnA",
+        authDomain: "web-travel-19d2c.firebaseapp.com",
+        projectId: "web-travel-19d2c",
+        storageBucket: "web-travel-19d2c.firebasestorage.app",
+        messagingSenderId: "850178211857",
+        appId: "1:850178211857:web:c22077d5d1c892f7b071b0",
+        measurementId: "G-JF6LPNDYF9"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    const myHotelsSiemReap = document.getElementById("srHotels");
+
+    async function loadHotels() {
+        try {
+            const querySnapshot = await getDocs(collection(db, "siemReapHotels"));
+            console.log("querySnapshot:", querySnapshot);
+
+            querySnapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                console.log("data:", data);
+
+                const div = document.createElement("div");
+                div.classList.add("province-card");
+
+                div.innerHTML = `
+          <img src="${data.image_placeholder}" alt="${data.name}">
+          <div class="content">
+            <h3>${data.name}</h3>
+            <p>Descriptions: ${data.description}</p>
+            <p>Focus on: ${data.focus}</p>
+            <p>price/night: ${data.price_range}</p>
+            <address>Adress:${data.address}</address>
+            <p><span>Rating:${data.rating}</span></p>
+          </div>
+        `;
+                div.addEventListener("click", () => {
+                    window.location.href = `siemreapnavdetail.html?id=${data.hotelId}`;
+                });
+
+                myHotelsSiemReap.appendChild(div);
+            });
+        } catch (err) {
+            console.error("❌ Error loading cafes:", err);
+        }
+    }
+
+    loadHotels();
+
+
+</script>
+
+</html>

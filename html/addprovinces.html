@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Place to Cambodia Firestore</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(90deg, rgba(18, 123, 227, 1) 0%, rgba(180, 195, 212, 1) 48%, rgba(18, 123, 227, 1) 100%);
+    }
+
+    .addText {
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .addText h1 {
+      text-transform: uppercase;
+      color: rgb(24, 24, 24);
+    }
+
+    .addProElement {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      background-color: #fff;
+      width: 50%;
+      margin: 4rem auto;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .formRow {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    label {
+      width: 150px;
+      text-align: right;
+      font-weight: bold;
+    }
+
+    input,
+    select {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid gray;
+    }
+
+    img {
+      display: none;
+      max-width: 90%;
+      max-height: 250px;
+      margin: 10px auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+
+    #btnAddPro {
+      padding: 12px 100px;
+      background-color: blue;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      align-self: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    #btnAddPro:hover {
+      background-color: rgb(76, 76, 239);
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <section>
+      <div class="addText">
+        <h1>Add Information</h1>
+      </div>
+      <form id="addProForm" class="addProElement">
+
+        <div class="formRow">
+          <label for="items">Category:</label>
+          <select id="items">
+            <option value="Places for Visited">Places for Visited</option>
+            <option value="Coffee Shop">Coffee Shop</option>
+            <option value="Hotels">Hotels</option>
+            <option value="Restaurants">Restaurants</option>
+          </select>
+        </div>
+
+        <!-- Province shared -->
+        <div class="formRow group places coffee hotels rest">
+          <label for="provinceName">Province:</label>
+          <input type="text" id="provinceName" placeholder="Enter province name">
+        </div>
+
+        <!-- Places -->
+        <div class="formRow group places">
+          <label for="placeName">Place Name:</label>
+          <input type="text" id="placeName" placeholder="Enter place name">
+        </div>
+        <div class="formRow group places">
+          <label for="proImage">Image URL:</label>
+          <input type="url" id="proImage" placeholder="Enter image URL">
+        </div>
+        <img id="imagePreview" alt="Image Preview (Places)">
+        <div class="formRow group places">
+          <label for="description">Description:</label>
+          <input type="text" id="description" placeholder="Short description">
+        </div>
+
+        <!-- Coffee -->
+        <div class="formRow group coffee">
+          <label for="coffeeName">Coffee's Name:</label>
+          <input type="text" id="coffeeName" placeholder="Enter cafe name">
+        </div>
+        <div class="formRow group coffee">
+          <label for="proImageCoffee">Image URL:</label>
+          <input type="url" id="proImageCoffee" placeholder="Enter image URL">
+        </div>
+        <img id="imagePreviewCoffee" alt="Coffee Image Preview">
+        <div class="formRow group coffee">
+          <label for="focusCoffee">Focus:</label>
+          <input type="text" id="focusCoffee" placeholder="Focus on">
+        </div>
+        <div class="formRow group coffee">
+          <label for="coffeeAddress">Address:</label>
+          <input type="text" id="coffeeAddress" placeholder="Your address">
+        </div>
+
+        <!-- Hotels -->
+        <div class="formRow group hotels">
+          <label for="hotelName">Hotel Name:</label>
+          <input type="text" id="hotelName" placeholder="Enter hotel name">
+        </div>
+        <div class="formRow group hotels">
+          <label for="proImageHotel">Image URL:</label>
+          <input type="url" id="proImageHotel" placeholder="Enter image URL">
+        </div>
+        <img id="imagePreviewHotel" alt="Hotel Image Preview">
+        <div class="formRow group hotels">
+          <label for="focusHotel">Focus:</label>
+          <input type="text" id="focusHotel" placeholder="What is this hotel known for?">
+        </div>
+        <div class="formRow group hotels">
+          <label for="priceRange">Price Range:</label>
+          <input type="text" id="priceRange" placeholder="Hotel price range">
+        </div>
+        <div class="formRow group hotels">
+          <label for="hotelDescription">Description:</label>
+          <input type="text" id="hotelDescription" placeholder="Short description of the hotel">
+        </div>
+        <div class="formRow group hotels">
+          <label for="hotelAddress">Address:</label>
+          <input type="text" id="hotelAddress" placeholder="Enter hotel address">
+        </div>
+
+        <!-- Restaurants -->
+        <div class="formRow group rest">
+          <label for="restaurantName">Restaurant Name:</label>
+          <input type="text" id="restaurantName" placeholder="Enter restaurant name">
+        </div>
+        <div class="formRow group rest">
+          <label for="proImageRestaurant">Image URL:</label>
+          <input type="url" id="proImageRestaurant" placeholder="Enter image URL">
+        </div>
+        <img id="imagePreviewRestaurant" alt="Restaurant Image Preview">
+        <div class="formRow group rest">
+          <label for="cuisine">Cuisine:</label>
+          <input type="text" id="cuisine" placeholder="Cuisine">
+        </div>
+        <div class="formRow group rest">
+          <label for="rating">Rating:</label>
+          <input type="text" id="rating" placeholder="Your rating">
+        </div>
+        <div class="formRow group rest">
+          <label for="shortDescription">Short Description:</label>
+          <input type="text" id="shortDescription" placeholder="Short description">
+        </div>
+
+        <button type="submit" id="btnAddPro">Add</button>
+      </form>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getFirestore, collection, doc, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCwZvlhgluWctDaCy_hEiVOsDO9AbVLpnA",
+      authDomain: "web-travel-19d2c.firebaseapp.com",
+      projectId: "web-travel-19d2c",
+      storageBucket: "web-travel-19d2c.appspot.com",
+      messagingSenderId: "850178211857",
+      appId: "1:850178211857:web:c22077d5d1c892f7b071b0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Image preview
+    function setupImagePreview(inputId, imgId) {
+      const input = document.getElementById(inputId);
+      console.log("inputImg:", input);
+
+      const preview = document.getElementById(imgId);
+      console.log("previewImg:", preview);
+
+      if (!input || !preview) return;
+      input.addEventListener('input', () => {
+        const url = input.value.trim();
+        console.log("imgUrl:", url);
+
+        if (url) {
+          preview.src = url;
+          preview.style.display = 'block';
+        } else {
+          preview.style.display = 'none';
+          preview.src = '';
+        }
+
+        console.log("imagePreview:", preview);
+      });
+    }
+
+    setupImagePreview('proImage', 'imagePreview');
+    setupImagePreview('proImageCoffee', 'imagePreviewCoffee');
+    setupImagePreview('proImageHotel', 'imagePreviewHotel');
+    setupImagePreview('proImageRestaurant', 'imagePreviewRestaurant');
+
+    // Form visibility
+    const categorySelect = document.getElementById('items');
+    const groups = document.querySelectorAll('.group');
+    console.log("groups:", groups);
+
+    function updateFormVisibility() {
+      const selected = categorySelect.value;
+      console.log("selected:", selected);
+
+      groups.forEach(g => g.style.display = 'none');
+      document.querySelectorAll('img[id^="imagePreview"]').forEach(img => img.style.display = 'none');
+
+      if (selected === "Places for Visited") document.querySelectorAll('.group.places').forEach(el => el.style.display = 'flex');
+      else if (selected === "Coffee Shop") document.querySelectorAll('.group.coffee').forEach(el => el.style.display = 'flex');
+      else if (selected === "Hotels") document.querySelectorAll('.group.hotels').forEach(el => el.style.display = 'flex');
+      else if (selected === "Restaurants") document.querySelectorAll('.group.rest').forEach(el => el.style.display = 'flex');
+    }
+
+    categorySelect.addEventListener('change', updateFormVisibility);
+    window.addEventListener('DOMContentLoaded', updateFormVisibility);
+
+    // Submit handler
+    const addForm = document.getElementById('addProForm');
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const selected = categorySelect.value;
+      const btn = document.getElementById('btnAddPro');
+      btn.disabled = true;
+      btn.textContent = 'Adding...';
+      console.log("btn:", btn);
+
+      try {
+        const provinceInput = document.getElementById('provinceName').value.trim();
+        if (!provinceInput) {
+          alert("⚠️ Please enter province name!");
+          return;
+        }
+        const normalizedInput = provinceInput.toLowerCase().replace(/\s+/g, '');
+        console.log("normalizedInput:", normalizedInput);
+
+        const provincesRef = collection(db, "provincesCambodia");
+        const snapshot = await getDocs(provincesRef);
+        console.log("snapshot:", snapshot);
+
+        let matchedProvince = null;
+
+
+        snapshot.forEach(docSnap => {
+          const firestoreName = docSnap.data().name?.toLowerCase().replace(/\s+/g, '');
+          console.log("firestoreName:", firestoreName);
+          
+          if (firestoreName === normalizedInput)
+            matchedProvince = { id: docSnap.id, ...docSnap.data() };
+            console.log("matchedProvince:", matchedProvince);
+        });
+
+        if (!matchedProvince) {
+          alert("⚠️ Province not found!");
+          return;
+        }
+        const provinceId = matchedProvince.provinceId || matchedProvince.id;
+        console.log("provinceId:", provinceId);
+
+        // Handle each category
+        let docRef;
+        if (selected === "Hotels") {
+          const name = document.getElementById('hotelName').value.trim();
+          const image = document.getElementById('proImageHotel').value.trim();
+          const focus = document.getElementById('focusHotel').value.trim();
+          const price = document.getElementById('priceRange').value.trim();
+          const description = document.getElementById('hotelDescription').value.trim();
+          const address = document.getElementById('hotelAddress').value.trim();
+          if (!name || !image || !focus || !price || !description || !address) {
+            alert("❌ Please fill all hotel fields!");
+            return;
+          }
+          docRef = doc(collection(db, "hotelCambodia"));
+          await setDoc(docRef, {
+            hotelId: docRef.id,
+            name, focus, priceRange: price, description, address, image,
+            provinceName: matchedProvince.name,
+            provinceId,
+            created_at: serverTimestamp(),
+            updated_at: serverTimestamp()
+          });
+          alert("✅ Hotel added successfully!");
+        } else if (selected === "Places for Visited") {
+          const name = document.getElementById('placeName').value.trim();
+          const image = document.getElementById('proImage').value.trim();
+          const description = document.getElementById('description').value.trim();
+          if (!name || !image || !description) {
+            alert("❌ Please fill all place fields!");
+            return;
+          }
+          docRef = doc(collection(db, "placesCambo"));
+          await setDoc(docRef, {
+            placeId: docRef.id,
+            name, image, description,
+            provinceName: matchedProvince.name,
+            provinceId,
+            created_at: serverTimestamp(),
+            updated_at: serverTimestamp()
+          });
+          alert("✅ Place added successfully!");
+        } else if (selected === "Coffee Shop") {
+          const name = document.getElementById('coffeeName').value.trim();
+          const image = document.getElementById('proImageCoffee').value.trim();
+          const focus = document.getElementById('focusCoffee').value.trim();
+          const address = document.getElementById('coffeeAddress').value.trim();
+          if (!name || !image || !focus || !address) {
+            alert("❌ Please fill all coffee shop fields!");
+            return;
+          }
+          docRef = doc(collection(db, "cafeShopCambo"));
+          await setDoc(docRef, {
+            coffeeId: docRef.id,
+            name, image, focus, address,
+            provinceName: matchedProvince.name,
+            provinceId,
+            created_at: serverTimestamp(),
+            updated_at: serverTimestamp()
+          });
+          alert("✅ Coffee shop added successfully!");
+        } else if (selected === "Restaurants") {
+          const name = document.getElementById('restaurantName').value.trim();
+          const image = document.getElementById('proImageRestaurant').value.trim();
+          const cuisine = document.getElementById('cuisine').value.trim();
+          const rating = document.getElementById('rating').value.trim();
+          const description = document.getElementById('shortDescription').value.trim();
+          if (!name || !image || !cuisine || !rating || !description) {
+            alert("❌ Please fill all restaurant fields!");
+            return;
+          }
+          docRef = doc(collection(db, "restaurantsCambodia"));
+          await setDoc(docRef, {
+            restaurantId: docRef.id,
+            name, image, cuisine, rating, description,
+            provinceName: matchedProvince.name,
+            provinceId,
+            created_at: serverTimestamp(),
+            updated_at: serverTimestamp()
+          });
+          alert("✅ Restaurant added successfully!");
+        }
+
+        // Reset form & previews
+        addForm.reset();
+        updateFormVisibility();
+        document.querySelectorAll('img[id^="imagePreview"]').forEach(img => img.style.display = 'none');
+
+      } catch (err) {
+        console.error(err);
+        alert("❌ Error adding data: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Add';
+      }
+    });
+  </script>
+</body>
+
+</html>

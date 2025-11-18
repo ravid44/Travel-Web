@@ -1,0 +1,16 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.myTemples{
+    display: grid;
+    grid-template-columns: repeat(6, 20%);
+    text-align: center;
+}
+
+.temple1 img{
+    width: 50%;
+    border-radius: 20%;
+}

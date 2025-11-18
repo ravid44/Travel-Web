@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Place Details</title>
+
+  <link rel="stylesheet" href="../css/home.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    body {
+      background-color: rgb(199, 200, 201);
+    }
+
+    .detail-section {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    /* ✅ UNIFIED STYLE FOR ALL DETAILS */
+    .detailBox {
+      background: #e3efef;
+      width: 40%;
+      padding: 2rem;
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 5rem;
+    }
+
+    .detailBox img {
+      width: 100%;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .detailBox h1 {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .detailBox p {
+      width: 100%;
+      font-size: 1rem;
+      margin: 0.5rem 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="header-placeholder"></div>
+
+  <main>
+    <section id="placesDetails" class="detail-section"></section>
+    <section id="cafeDetails" class="detail-section"></section>
+    <section id="hotelDetails" class="detail-section"></section>
+    <section id="restsDetails" class="detail-section"></section>
+  </main>
+
+  <footer id="footer"></footer>
+
+  <script src="../js/home.js"></script>
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000, once: true });
+  </script>
+
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCwZvlhgluWctDaCy_hEiVOsDO9AbVLpnA",
+      authDomain: "web-travel-19d2c.firebaseapp.com",
+      projectId: "web-travel-19d2c",
+      storageBucket: "web-travel-19d2c.firebasestorage.app",
+      messagingSenderId: "850178211857",
+      appId: "1:850178211857:web:c22077d5d1c892f7b071b0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const id = new URLSearchParams(location.search).get("id");
+
+    const placesBox = document.getElementById("placesDetails");
+    const cafeBox = document.getElementById("cafeDetails");
+    const hotelBox = document.getElementById("hotelDetails");
+    const restBox = document.getElementById("restsDetails");
+
+    /* ------------------ LOAD PLACE DETAILS ------------------ */
+    async function loadPlaceDetails() {
+      const snap = await getDoc(doc(db, "placesCambo", id));
+      if (!snap.exists()) return false;
+
+      const data = snap.data();
+
+      placesBox.innerHTML = `
+        <div class="detailBox">
+          <h1>${data.name}</h1>
+          <img src="${data.image}" alt="${data.name}">
+          <p>${data.description}</p>
+        </div>
+      `;
+
+      cafeBox.style.display = "none";
+      hotelBox.style.display = "none";
+      restBox.style.display = "none";
+      return true;
+    }
+
+    /* ------------------ LOAD CAFE DETAILS ------------------ */
+    async function loadCoffee() {
+      const docs = await getDocs(collection(db, "cafeShopCambo"));
+      const cafes = docs.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      const cafe = cafes.find(c => {
+        const slug = `${c.name}`.toLowerCase().replace(/[^\w]+/g, "_") + "_" + (c.provinceId || "");
+        return c.id === id || slug === id;
+      });
+
+      if (!cafe) return false;
+
+      cafeBox.innerHTML = `
+        <div class="detailBox">
+          <h1>${cafe.name}</h1>
+          <img src="${cafe.image || cafe.image_placeholder || 'https://via.placeholder.com/400'}">
+          <p><b>Address:</b> ${cafe.address || 'N/A'}</p>
+          <p><b>Focus:</b> ${cafe.focus || 'N/A'}</p>
+          <p><b>Notes:</b> ${cafe.notes || 'N/A'}</p>
+          <p><b>Hours:</b> ${cafe.operating_hours || 'N/A'}</p>
+        </div>
+      `;
+
+      hotelBox.style.display = "none";
+      restBox.style.display = "none";
+      placesBox.style.display = "none";
+      return true;
+    }
+
+    /* ------------------ LOAD HOTEL DETAILS ------------------ */
+    async function loadHotel() {
+      const snap = await getDoc(doc(db, "hotelCambodia", id));
+      if (!snap.exists()) return false;
+
+      const h = snap.data();
+
+      hotelBox.innerHTML = `
+        <div class="detailBox">
+          <h1>${h.name}</h1>
+          <img src="${h.image}">
+          <p><b>Address:</b> ${h.address}</p>
+          <p><b>Rating:</b> ${h.rating}</p>
+          <p><b>Price:</b> ${h.price_range}</p>
+        </div>
+      `;
+
+      cafeBox.style.display = "none";
+      restBox.style.display = "none";
+      placesBox.style.display = "none";
+      return true;
+    }
+
+    /* ------------------ LOAD RESTAURANT DETAILS ------------------ */
+    async function loadRestaurant() {
+      const snap = await getDoc(doc(db, "restaurantsCambodia", id));
+      if (!snap.exists()) return false;
+
+      const r = snap.data();
+
+      restBox.innerHTML = `
+        <div class="detailBox">
+          <h1>${r.name}</h1>
+          <img src="${r.image}">
+          <p><b>Cuisine:</b> ${r.cuisine}</p>
+          <p><b>Description:</b> ${r.short_description}</p>
+        </div>
+      `;
+
+      cafeBox.style.display = "none";
+      hotelBox.style.display = "none";
+      placesBox.style.display = "none";
+      return true;
+    }
+
+    /* ------------------ AUTO RUN ------------------ */
+    (async () => {
+      if (await loadPlaceDetails()) return;
+      if (await loadCoffee()) return;
+      if (await loadHotel()) return;
+      if (await loadRestaurant()) return;
+
+      document.querySelector("main").innerHTML =
+        "<p style='text-align:center; margin-top:3rem;'>❌ No matching place found.</p>";
+    })();
+
+  </script>
+
+</body>
+</html>

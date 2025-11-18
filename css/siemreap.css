@@ -1,0 +1,150 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/*main font*/
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap");
+
+main {
+  font-family: "Merriweather", serif;
+}
+
+/* Slider container */
+.slider-container {
+  width: 100%;
+  /* hide overflow on the bottom */
+  overflow: hidden;
+  position: relative;
+  max-height: 400px; /* adjust slider height */
+}
+
+/* Slider images in row */
+.imageSlider {
+  display: flex;
+  transition: transform 1s ease-in-out; /* smooth sliding */
+}
+
+/* Each image */
+.imageSlider img {
+  width: 100vw;
+  height: 50vh;
+
+  /* each image takes full width of container */
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.coffeeElement {
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.coffeeShop {
+  margin-top: 8rem;
+}
+
+.coffeeShop h3 {
+  font-size: 3rem;
+  text-align: center;
+}
+
+.myCoffee img {
+  width: 100%;
+  border-radius: 1rem;
+}
+
+.myCoffee h3 {
+  font-size: 2rem;
+  padding-top: 3%;
+}
+
+.arrowBack {
+  margin-bottom: 3rem;
+  padding: 2%;
+}
+
+.arrowBack i {
+  font-size: 2rem;
+  cursor: pointer;
+  transition: 2s;
+}
+
+.arrowBack i:hover {
+  color: blue;
+}
+
+.hotelImg {
+  margin-top: 8rem;
+}
+
+.hotelImg img {
+  width: 100vw;
+  height: 95vh;
+  object-fit: cover;
+}
+
+.hotels {
+  margin-top: 8rem;
+}
+
+.hotels h3 {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 2.5rem;
+}
+
+#cafeElment2, #srHotels, #srRest {
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  justify-content: center;
+  gap: 7rem;
+  margin-top: 8rem;
+  
+}
+
+#cafeElment2 img, #srHotels img, #srRest img{
+  width: 100%;
+  height: 15rem;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.content {
+  background: white;
+  border-radius: 8px;
+  padding: 10%;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 2rem;
+  padding: 10%;
+  
+}
+
+#cafeElment2 img:hover {
+  transform: translateY(-5px);
+}
+
+.header-image img{
+  width: 100vw;
+  height: 80vh;
+  object-fit: cover;
+}
+
+.restText, .hotelText{
+  margin-top: 4rem;
+}
+
+.restText h1, .hotelText h1{
+  font-size: 3rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+

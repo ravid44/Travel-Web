@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>header</title>
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+    header {
+        font-family: "Ubuntu", sans-serif;
+        padding-top: 0.5rem;
+    }
+
+    .headerElement {
+        position: fixed;
+        top: 0;
+        margin-top: -2rem;
+        background-color: #fff;
+        height: 10%;
+        z-index: 1;
+
+    }
+
+    .login {
+        display: flex;
+        gap: 1rem;
+        cursor: pointer;
+    }
+
+    .login i {
+        font-size: 1.2rem;
+    }
+
+    .login:hover {
+        color: blue;
+    }
+
+    /* Modal background */
+    .modal {
+        display: none;
+        /* hidden by default */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+
+        /* semi-transparent background */
+    }
+
+    /* Modal content box */
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        /* center vertically */
+        padding: 5%;
+        border-radius: 8px;
+        width: 30%;
+        text-align: center;
+        position: relative;
+        display: block;
+
+
+    }
+
+    /* Close button */
+    .closeBtn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    /* Input fields */
+    .modal-content input {
+        width: 90%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+    .modal-content i {
+        font-size: 6rem;
+    }
+
+
+
+    /* Submit button */
+    .submitBtn {
+        padding: 10px 20px;
+        margin-top: 10px;
+        border: none;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .submitBtn:hover {
+        background-color: #0056b3;
+    }
+
+    form#loginForm {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 3rem;
+    }
+
+
+    #loginForm input {
+        width: 20vw;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .loginELement {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+
+    }
+
+    .loginELement i {
+        color: #007bff;
+
+    }
+
+    .loginELement h3 {
+        color: #007bff;
+    }
+
+
+    #addIcon {
+        cursor: pointer;
+    }
+
+
+    #addIcon i {
+        color: #007bff;
+        font-size: 1.2rem;
+    }
+
+    /*
+    #addIcon:hover {
+        background-color: #61a5ed;
+    }
+    */
+</style>
+
+<body>
+
+    <section class="headerElement">
+        <header class="myHeader">
+            <div class="header-text" style="cursor: pointer;">
+                <h1>
+                    CamB<b>o</b>
+                </h1>
+            </div>
+            <nav>
+                <ul class="textNavbar">
+                    <li id="home">
+                        Home
+                    </li>
+
+                    <li id="destinations">
+                        Destinations
+                    </li>
+
+                    <li id="contactUS">
+                        Contact us
+                    </li>
+
+
+
+                </ul>
+
+                <!--searchIcon
+                   <div class="searchIcon" id="mySearch">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                -->
+
+                <div class="loginELement">
+                    <i class="fa-solid fa-user"></i>
+                    <h3>Login</h3>
+                </div>
+
+                <div id="addIcon">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <a href="../html/storedata.html">
+                    <div id="mySavedIcon">
+                        <i style="font-size: 1.5rem;" class="fa-regular fa-heart"></i>
+                    </div>
+                </a>
+
+
+                <div id="userInfor">
+
+                </div>
+
+
+
+
+            </nav>
+        </header>
+    </section>
+
+    <!--
+        
+        <section class="searchSpot">
+        <div class="spotText">
+            <h2>Where to go?</h2>
+        </div>
+
+        <div class="input-box">
+            <form class="search-input">
+                <input type="text" placeholder="Search">
+            </form>
+        </div>
+
+    </section>
+      
+    -->
+
+
+
+</body>
+
+
+<!-- Firebase SDK -->
+<script type="module" src="../js/home.js"></script>
+
+</html>
