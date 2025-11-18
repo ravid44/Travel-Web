@@ -14,6 +14,7 @@
   <style>
     body {
       background-color: rgb(199, 200, 201);
+      font-family: Arial, sans-serif;
     }
 
     .detail-section {
@@ -22,7 +23,7 @@
       margin-top: 2rem;
     }
 
-    /* ✅ UNIFIED STYLE FOR ALL DETAILS */
+    /* ---------------- UNIFIED DETAIL BOX STYLE ---------------- */
     .detailBox {
       background: #e3efef;
       width: 40%;
@@ -32,10 +33,13 @@
       flex-direction: column;
       align-items: center;
       margin-top: 5rem;
+      min-height: 500px; /* ensure all boxes same height */
     }
 
     .detailBox img {
       width: 100%;
+      height: 350px; /* uniform image height */
+      object-fit: cover;
       border-radius: 1rem;
       margin-bottom: 1rem;
     }
@@ -49,6 +53,13 @@
       width: 100%;
       font-size: 1rem;
       margin: 0.5rem 0;
+    }
+
+    .map-container {
+      width: 100%;
+      height: 300px;
+      border-radius: 1rem;
+      margin-top: 1rem;
     }
   </style>
 </head>
@@ -72,7 +83,6 @@
     AOS.init({ duration: 1000, once: true });
   </script>
 
-  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
@@ -88,7 +98,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
     const id = new URLSearchParams(location.search).get("id");
 
     const placesBox = document.getElementById("placesDetails");
@@ -96,11 +105,40 @@
     const hotelBox = document.getElementById("hotelDetails");
     const restBox = document.getElementById("restsDetails");
 
-    /* ------------------ LOAD PLACE DETAILS ------------------ */
+    /* ------------------ GOOGLE MAPS ---------------- */
+    function loadGoogleMaps(apiKey) {
+      return new Promise((resolve, reject) => {
+        if (window.google) return resolve(window.google.maps);
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+        script.defer = true;
+        script.async = true;
+        script.onload = () => resolve(window.google.maps);
+        script.onerror = () => reject('Google Maps failed to load');
+        document.head.appendChild(script);
+      });
+    }
+
+    function createMap(container, latitude, longitude) {
+      const mapDiv = document.createElement('div');
+      mapDiv.className = "map-container";
+      container.appendChild(mapDiv);
+
+      const map = new google.maps.Map(mapDiv, {
+        center: { lat: latitude, lng: longitude },
+        zoom: 15
+      });
+
+      new google.maps.Marker({
+        position: { lat: latitude, lng: longitude },
+        map: map
+      });
+    }
+
+    /* ------------------ LOAD DETAILS FUNCTIONS ---------------- */
     async function loadPlaceDetails() {
       const snap = await getDoc(doc(db, "placesCambo", id));
       if (!snap.exists()) return false;
-
       const data = snap.data();
 
       placesBox.innerHTML = `
@@ -111,22 +149,24 @@
         </div>
       `;
 
+      if (data.latitude && data.longitude) {
+        await loadGoogleMaps('YOUR_GOOGLE_MAPS_API_KEY');
+        createMap(placesBox.querySelector('.detailBox'), data.latitude, data.longitude);
+      }
+
       cafeBox.style.display = "none";
       hotelBox.style.display = "none";
       restBox.style.display = "none";
       return true;
     }
 
-    /* ------------------ LOAD CAFE DETAILS ------------------ */
     async function loadCoffee() {
       const docs = await getDocs(collection(db, "cafeShopCambo"));
       const cafes = docs.docs.map(d => ({ id: d.id, ...d.data() }));
-
       const cafe = cafes.find(c => {
         const slug = `${c.name}`.toLowerCase().replace(/[^\w]+/g, "_") + "_" + (c.provinceId || "");
         return c.id === id || slug === id;
       });
-
       if (!cafe) return false;
 
       cafeBox.innerHTML = `
@@ -140,17 +180,20 @@
         </div>
       `;
 
+      if (cafe.latitude && cafe.longitude) {
+        await loadGoogleMaps('YOUR_GOOGLE_MAPS_API_KEY');
+        createMap(cafeBox.querySelector('.detailBox'), cafe.latitude, cafe.longitude);
+      }
+
       hotelBox.style.display = "none";
       restBox.style.display = "none";
       placesBox.style.display = "none";
       return true;
     }
 
-    /* ------------------ LOAD HOTEL DETAILS ------------------ */
     async function loadHotel() {
       const snap = await getDoc(doc(db, "hotelCambodia", id));
       if (!snap.exists()) return false;
-
       const h = snap.data();
 
       hotelBox.innerHTML = `
@@ -163,17 +206,20 @@
         </div>
       `;
 
+      if (h.latitude && h.longitude) {
+        await loadGoogleMaps('YOUR_GOOGLE_MAPS_API_KEY');
+        createMap(hotelBox.querySelector('.detailBox'), h.latitude, h.longitude);
+      }
+
       cafeBox.style.display = "none";
       restBox.style.display = "none";
       placesBox.style.display = "none";
       return true;
     }
 
-    /* ------------------ LOAD RESTAURANT DETAILS ------------------ */
     async function loadRestaurant() {
       const snap = await getDoc(doc(db, "restaurantsCambodia", id));
       if (!snap.exists()) return false;
-
       const r = snap.data();
 
       restBox.innerHTML = `
@@ -185,13 +231,18 @@
         </div>
       `;
 
+      if (r.latitude && r.longitude) {
+        await loadGoogleMaps('YOUR_GOOGLE_MAPS_API_KEY');
+        createMap(restBox.querySelector('.detailBox'), r.latitude, r.longitude);
+      }
+
       cafeBox.style.display = "none";
       hotelBox.style.display = "none";
       placesBox.style.display = "none";
       return true;
     }
 
-    /* ------------------ AUTO RUN ------------------ */
+    /* ------------------ AUTO RUN ---------------- */
     (async () => {
       if (await loadPlaceDetails()) return;
       if (await loadCoffee()) return;
@@ -203,6 +254,5 @@
     })();
 
   </script>
-
 </body>
 </html>
