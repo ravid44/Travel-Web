@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
-import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -98,7 +98,8 @@ const places = [
     "location": { "lat": 13.3610, "lng": 103.8590 },
     "provinceId": "iXYpAdo3OZFh3jknWup1",
     "typeOfPlace": "Hotel",
-    "provinceName": "Siem Reap"
+    "provinceName": "Siem Reap",
+    "documentLink": "https://angkorvillagehotel.asia/"
   },
 
 
@@ -113,7 +114,8 @@ const places = [
     "location": { "lat": 11.5540, "lng": 104.9270 },
     "provinceId": "ZFpogBIP5lCwDFdeAOjE",
     "typeOfPlace": "Palace / Temple",
-    "provinceName": "Phnom Penh"
+    "provinceName": "Phnom Penh",
+    "documentLink": "https://en.wikipedia.org/wiki/Royal_Palace_of_Cambodia"
 
   },
   {
@@ -123,7 +125,8 @@ const places = [
     "location": { "lat": 11.5720, "lng": 104.8870 },
     "provinceId": "ZFpogBIP5lCwDFdeAOjE",
     "typeOfPlace": "Museum / Historic",
-    "provinceName": "Phnom Penh"
+    "provinceName": "Phnom Penh",
+    "documentLink": "https://en.wikipedia.org/wiki/Tuol_Sleng_Genocide_Museum"
 
 
   },
@@ -134,7 +137,8 @@ const places = [
     "location": { "lat": 11.5710, "lng": 104.9320 },
     "provinceId": "ZFpogBIP5lCwDFdeAOjE",
     "typeOfPlace": "Café / Street / Promenade",
-    "provinceName": "Phnom Penh"
+    "provinceName": "Phnom Penh",
+    "documentLink": "https://en.wikipedia.org/wiki/Sisowath_Quay"
   },
 
 
@@ -198,7 +202,8 @@ const places = [
     "location": { "lat": 10.6500, "lng": 104.1500 },
     "provinceId": "4m2jr9GgyHPYyncMiCBh",
     "typeOfPlace": "National Park / Nature",
-    "provinceName": "Kampot"
+    "provinceName": "Kampot",
+    "documentLink": "https://en.wikipedia.org/wiki/Preah_Monivong_National_Park"
 
   },
   {
@@ -208,7 +213,8 @@ const places = [
     "location": { "lat": 10.6167, "lng": 104.1700 },
     "provinceId": "4m2jr9GgyHPYyncMiCBh",
     "typeOfPlace": "Historic / Scenic",
-    "provinceName": "Kampot"
+    "provinceName": "Kampot",
+    "documentLink": "https://en.wikipedia.org/wiki/Bokor_Hill_Station"
 
   },
 
@@ -245,7 +251,8 @@ const places = [
     "location": { "lat": 12.5670, "lng": 107.4183 },
     "provinceId": "umqpSDiZgvwVJGq1QkO0",
     "typeOfPlace": "Hill / Nature",
-    "provinceName": "Mondulkiri"
+    "provinceName": "Mondulkiri",
+    "documentLink": "https://en.wikipedia.org/wiki/Phnom_Nam_Lyr"
   },
   {
     "name": "Senmonorom",
@@ -254,7 +261,8 @@ const places = [
     "location": { "lat": 12.4712, "lng": 107.2386 },
     "provinceId": "umqpSDiZgvwVJGq1QkO0",
     "typeOfPlace": "Town / Nature",
-    "provinceName": "Mondulkiri"
+    "provinceName": "Mondulkiri",
+    "documentLink": "https://en.wikipedia.org/wiki/Senmonorom"
   },
 
 
@@ -1240,32 +1248,27 @@ buttonPlaces.addEventListener("click", async () => {
 
   try {
     for (const myData of places) {
+      // Use place name as document ID
       const docRef = doc(db, "placesCambo", myData.name);
+      const docSnap = await getDoc(docRef);
 
-      await setDoc(docRef, {
-        name: myData.name,
-        documentLink: myData.documentLink,
-        provinceName: myData.provinceName,
-        description: myData.description,
-        location: myData.location,
-        image: myData.image,
-        provinceId: myData.provinceId,
-        typeOfPlace: myData.typeOfPlace,
-        updated_at: serverTimestamp(),
-        created_at: serverTimestamp()
-      }, { merge: true });
+      await setDoc(
+        docRef,
+        {
+          ...myData, // automatically add all fields from JSON
+          updated_at: serverTimestamp(),
+          created_at: docSnap.exists() ? docSnap.data().created_at : serverTimestamp()
+        },
+        { merge: true } // merge ensures existing fields are preserved
+      );
 
       console.log(`✅ Saved/Updated: ${myData.name} | ProvinceId: ${myData.provinceId}`);
     }
 
     alert("✅ Upload/Update complete!");
-
-    // Reload places for the currently filtered province
-    if (currentProvince) {
-      loadPlacesByProvince(currentProvince);
-    }
   } catch (error) {
     console.error("❌ Error uploading/updating data:", error);
     alert("❌ Failed to upload/update data");
   }
+
 });
