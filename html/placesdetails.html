@@ -23,7 +23,6 @@
       margin-top: 2rem;
     }
 
-    /* ---------------- UNIFIED DETAIL BOX STYLE ---------------- */
     .detailBox {
       background: #e3efef;
       width: 40%;
@@ -33,12 +32,12 @@
       flex-direction: column;
       align-items: center;
       margin-top: 5rem;
-      min-height: 500px; /* ensure all boxes same height */
+      min-height: 500px;
     }
 
     .detailBox img {
       width: 100%;
-      height: 350px; /* uniform image height */
+      height: 350px;
       object-fit: cover;
       border-radius: 1rem;
       margin-bottom: 1rem;
@@ -55,16 +54,29 @@
       margin: 0.5rem 0;
     }
 
-    .map-container {
-      width: 100%;
-      height: 300px;
-      border-radius: 1rem;
+    /* Button style for document link */
+    .doc-button {
+      display: inline-block;
+      padding: 10px 20px;
       margin-top: 1rem;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .doc-button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 
 <body>
+
+
+
 
   <div id="header-placeholder"></div>
 
@@ -105,36 +117,6 @@
     const hotelBox = document.getElementById("hotelDetails");
     const restBox = document.getElementById("restsDetails");
 
-    /* ------------------ GOOGLE MAPS ---------------- */
-    function loadGoogleMaps(apiKey) {
-      return new Promise((resolve, reject) => {
-        if (window.google) return resolve(window.google.maps);
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
-        script.defer = true;
-        script.async = true;
-        script.onload = () => resolve(window.google.maps);
-        script.onerror = () => reject('Google Maps failed to load');
-        document.head.appendChild(script);
-      });
-    }
-
-    function createMap(container, latitude, longitude) {
-      const mapDiv = document.createElement('div');
-      mapDiv.className = "map-container";
-      container.appendChild(mapDiv);
-
-      const map = new google.maps.Map(mapDiv, {
-        center: { lat: latitude, lng: longitude },
-        zoom: 15
-      });
-
-      new google.maps.Marker({
-        position: { lat: latitude, lng: longitude },
-        map: map
-      });
-    }
-
     /* ------------------ LOAD DETAILS FUNCTIONS ---------------- */
     async function loadPlaceDetails() {
       const snap = await getDoc(doc(db, "placesCambo", id));
@@ -142,17 +124,16 @@
       const data = snap.data();
 
       placesBox.innerHTML = `
-        <div class="detailBox">
-          <h1>${data.name}</h1>
-          <img src="${data.image}" alt="${data.name}">
-          <p>${data.description}</p>
-        </div>
-      `;
+    <div class="detailBox">
+      <h1>${data.name}</h1>
+      <img src="${data.image}" alt="${data.name}">
+      <p>${data.description}</p>
+      <a href="${data.documentLink}" class="doc-button">Read More</a>
+    </div>
+  `;
 
-      if (data.latitude && data.longitude) {
-        await loadGoogleMaps('YOUR_GOOGLE_MAPS_API_KEY');
-        createMap(placesBox.querySelector('.detailBox'), data.latitude, data.longitude);
-      }
+
+
 
       cafeBox.style.display = "none";
       hotelBox.style.display = "none";
@@ -180,11 +161,6 @@
         </div>
       `;
 
-      if (cafe.latitude && cafe.longitude) {
-        await loadGoogleMaps('YOUR_GOOGLE_MAPS_API_KEY');
-        createMap(cafeBox.querySelector('.detailBox'), cafe.latitude, cafe.longitude);
-      }
-
       hotelBox.style.display = "none";
       restBox.style.display = "none";
       placesBox.style.display = "none";
@@ -206,11 +182,6 @@
         </div>
       `;
 
-      if (h.latitude && h.longitude) {
-        await loadGoogleMaps('YOUR_GOOGLE_MAPS_API_KEY');
-        createMap(hotelBox.querySelector('.detailBox'), h.latitude, h.longitude);
-      }
-
       cafeBox.style.display = "none";
       restBox.style.display = "none";
       placesBox.style.display = "none";
@@ -231,11 +202,6 @@
         </div>
       `;
 
-      if (r.latitude && r.longitude) {
-        await loadGoogleMaps('YOUR_GOOGLE_MAPS_API_KEY');
-        createMap(restBox.querySelector('.detailBox'), r.latitude, r.longitude);
-      }
-
       cafeBox.style.display = "none";
       hotelBox.style.display = "none";
       placesBox.style.display = "none";
@@ -252,7 +218,8 @@
       document.querySelector("main").innerHTML =
         "<p style='text-align:center; margin-top:3rem;'>❌ No matching place found.</p>";
     })();
-
   </script>
+
 </body>
+
 </html>

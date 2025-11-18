@@ -26,7 +26,8 @@ const places = [
     "location": { "lat": 13.4125, "lng": 103.866667 },
     "provinceId": "iXYpAdo3OZFh3jknWup1",
     "typeOfPlace": "Temple",
-    "provinceName": "Siem Reap"
+    "provinceName": "Siem Reap",
+    "documentLink": "https://en.wikipedia.org/wiki/Angkor_Wat"
 
   },
 
@@ -37,7 +38,9 @@ const places = [
     "location": { "lat": 13.4592, "lng": 103.8716 },
     "provinceId": "iXYpAdo3OZFh3jknWup1",
     "typeOfPlace": "Temple",
-    "provinceName": "Siem Reap"
+    "provinceName": "Siem Reap",
+    "documentLink": "https://en.wikipedia.org/wiki/Preah_Khan"
+
 
   },
 
@@ -48,7 +51,9 @@ const places = [
     "location": { "lat": 13.4128, "lng": 103.8663 },
     "provinceId": "iXYpAdo3OZFh3jknWup1",
     "typeOfPlace": "Temple / Viewpoint",
-    "provinceName": "Siem Reap"
+    "provinceName": "Siem Reap",
+    "documentLink": "https://en.wikipedia.org/wiki/Phnom_Bakheng"
+
 
 
   },
@@ -59,7 +64,9 @@ const places = [
     "location": { "lat": 13.4300, "lng": 103.8790 },
     "provinceId": "iXYpAdo3OZFh3jknWup1",
     "typeOfPlace": "Temple",
-    "provinceName": "Siem Reap"
+    "provinceName": "Siem Reap",
+    "documentLink": "https://en.wikipedia.org/wiki/Ta_Prohm"
+
 
   },
   {
@@ -69,7 +76,8 @@ const places = [
     "location": { "lat": 13.4410, "lng": 103.8620 },
     "provinceId": "iXYpAdo3OZFh3jknWup1",
     "typeOfPlace": "Temple",
-    "provinceName": "Siem Reap"
+    "provinceName": "Siem Reap",
+    "documentLink": "https://en.wikipedia.org/wiki/Bayon"
 
   },
   {
@@ -79,7 +87,8 @@ const places = [
     "location": { "lat": 13.6333, "lng": 103.8667 },
     "provinceId": "iXYpAdo3OZFh3jknWup1",
     "typeOfPlace": "Nature / Temple",
-    "provinceName": "Siem Reap"
+    "provinceName": "Siem Reap",
+    "documentLink": " https://en.wikipedia.org/wiki/Phnom_Kulen"
 
   },
   {
@@ -667,7 +676,7 @@ const places = [
   },
 
   /* kampongcham */
-    {
+  {
     "name": "Kizuna Bridge",
     "description": "Cambodia’s first bridge across the Mekong River, connecting Kampong Cham with Tboung Khmum. A popular sunset spot for locals and tourists.",
     "image": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Kizuna_Bridge_in_Kampong_Cham.jpg",
@@ -1235,6 +1244,7 @@ buttonPlaces.addEventListener("click", async () => {
 
       await setDoc(docRef, {
         name: myData.name,
+        documentLink: myData.documentLink,
         provinceName: myData.provinceName,
         description: myData.description,
         location: myData.location,
@@ -1243,7 +1253,7 @@ buttonPlaces.addEventListener("click", async () => {
         typeOfPlace: myData.typeOfPlace,
         updated_at: serverTimestamp(),
         created_at: serverTimestamp()
-      },{ merge: true });
+      }, { merge: true });
 
       console.log(`✅ Saved/Updated: ${myData.name} | ProvinceId: ${myData.provinceId}`);
     }
