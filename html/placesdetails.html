@@ -120,6 +120,7 @@
     /* ------------------ LOAD DETAILS FUNCTIONS ---------------- */
     async function loadPlaceDetails() {
       const snap = await getDoc(doc(db, "placesCambo", id));
+      console.log("snapPlaces:", snap);
       if (!snap.exists()) return false;
       const data = snap.data();
 
@@ -143,9 +144,13 @@
 
     async function loadCoffee() {
       const docs = await getDocs(collection(db, "cafeShopCambo"));
+      console.log("docCafe:", docs);
+
       const cafes = docs.docs.map(d => ({ id: d.id, ...d.data() }));
+      console.log("cafes:", cafes);
       const cafe = cafes.find(c => {
         const slug = `${c.name}`.toLowerCase().replace(/[^\w]+/g, "_") + "_" + (c.provinceId || "");
+        console.log("slug:", slug);
         return c.id === id || slug === id;
       });
       if (!cafe) return false;
