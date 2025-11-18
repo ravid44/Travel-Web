@@ -113,6 +113,7 @@
 
     <section class="mainText">
         <h1>Your Favorite Places</h1>
+        
         <div id="placeData"></div>
     </section>
 
@@ -128,7 +129,10 @@
 
     // Load Favorite Data
     const placeDataDiv = document.getElementById("placeData");
+    console.log("placeDataDiv:", placeDataDiv);
+
     const favoritePlaces = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
+    console.log("favoritePlaces:", favoritePlaces);
 
     if (favoritePlaces.length > 0) {
         placeDataDiv.innerHTML = favoritePlaces.map(place => `
@@ -164,8 +168,10 @@
     deleteButtons.forEach(btn => {
         btn.addEventListener("click", () => {
             const id = btn.getAttribute("data-id");
+            console.log("idDeleteBtn:", id);
 
             const updatedFavorites = favoritePlaces.filter(place => place.id !== id);
+            console.log("updatedFavorites:", updatedFavorites);
 
             localStorage.setItem("favoritePlaces", JSON.stringify(updatedFavorites));
 
@@ -180,6 +186,7 @@
     document.querySelector(".myArrow").addEventListener("click", () => {
 
         const lastProvinceId = localStorage.getItem("lastProvinceId");
+        console.log("lastProvinceIdStorage:", lastProvinceId);
 
         if (!lastProvinceId) {
             alert("No stored province found.");

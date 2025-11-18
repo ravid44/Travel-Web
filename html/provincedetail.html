@@ -403,18 +403,26 @@
 
     // ==================== Places =====================
     let allPlaces = [], visibleCount = 6, isExpanded = false;
+    console.log("isExpanded:", isExpanded);
 
     async function loadPlacesByProvince(provinceId) {
       const q = query(collection(db, "placesCambo"), where("provinceId", "==", provinceId));
+      console.log("q:",q);
+
       const snapshot = await getDocs(q);
+      console.log("snapshotPlaces:", snapshot);
+
       if (snapshot.empty) return;
       allPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log("allPlaces:", allPlaces);
       renderPlaces();
     }
 
     function renderPlaces() {
       placesList.innerHTML = "";
       const showItems = isExpanded ? allPlaces : allPlaces.slice(0, visibleCount);
+      console.log("showItems:", showItems);
+
       showItems.forEach(data => {
         const div = document.createElement("div");
         div.className = "place-card";
@@ -445,8 +453,10 @@
 
         // Store data on heart click
         div.querySelector(".myIcon").addEventListener("click", () => {
+          console.log("div:", div);
           // Get current favorites from localStorage, or empty array
           let favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
+          console.log("favorites:", favorites);
 
           // Add the new place if not already in favorites
           if (!favorites.some(f => f.id === data.id)) {
