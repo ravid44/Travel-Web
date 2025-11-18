@@ -223,7 +223,6 @@
       left: 85%;
       /* same distance from right */
       margin: 0;
-
       /* remove your margin-left/margin-top */
     }
 
@@ -235,25 +234,82 @@
       transition: 0.2s;
     }
 
+    /* Section overlay */
+    .section-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.95);
+      z-index: 10;
+      display: none;
+    }
 
+    #viewMoreBtn,
+    #viewMoreCoffeeBtn,
+    #viewMoreHotelsBtn,
+    #viewMoreRestsBtn {
+      display: none;
+      padding: 20px 30px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      margin: 2rem auto;
+      display: block;
+    }
 
+    #viewMoreBtn:hover,
+    #viewMoreCoffeeBtn:hover,
+    #viewMoreHotelsBtn:hover,
+    #viewMoreRestsBtn:hover {
+      background: rgb(40, 40, 227);
+    }
 
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #1a73e8;
+      font-family: Arial, sans-serif;
+    }
+
+    .myIcon,
+    .myHeartICafe,
+    .myHeartIHotel {
+      position: absolute;
+      bottom: 0.5rem;
+      right: 1rem;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: 0.2s;
+    }
+
+    .myIcon i:hover,
     .myHeartICafe i:hover,
-    .myHeartIHotel i:hover,
-    .myIcon i:hover {
+    .myHeartIHotel i:hover {
       color: red;
     }
   </style>
 </head>
 
 <body>
-  <!-- Loading overlay -->
-  <div id="loadingOverlay">
-    <div class="loadingText">Loading...</div>
-  </div>
-
   <!--header-->
   <div id="header-placeholder"></div>
+
+  <div id="loadingOverlay">Loading...</div>
 
   <main>
     <div class="headerImg"></div>
@@ -265,9 +321,7 @@
     </section>
 
     <section>
-      <div class="mycoffeeText">
-        <h1>coffee shop</h1>
-      </div>
+      <h1>Coffee Shops</h1>
       <div id="coffeeShop">
         <div class="section-overlay" id="coffeeOverlay"></div>
       </div>
@@ -275,9 +329,7 @@
     </section>
 
     <section>
-      <div class="myCafesText">
-        <h1>hotels</h1>
-      </div>
+      <h1>Hotels</h1>
       <div id="hotels">
         <div class="section-overlay" id="hotelOverlay"></div>
       </div>
@@ -285,9 +337,7 @@
     </section>
 
     <section>
-      <div class="myRestText">
-        <h1>restaurants</h1>
-      </div>
+      <h1>Restaurants</h1>
       <div id="restElement">
         <div class="section-overlay" id="restOverlay"></div>
       </div>
@@ -297,32 +347,11 @@
     <section id="maps"></section>
   </main>
 
-
-
-  <!--footer-->
-  <footer id="footer"></footer>
-
-
-
+  <footer></footer>
   <script src="../js/home.js"></script>
-
-  <script>
-    let myMenu = document.querySelector(".menuBars");
-    let myThreeMenu = document.querySelector(".myOption");
-    let arrow = document.getElementById("myArrow");
-
-    myMenu?.addEventListener("click", () => {
-      myThreeMenu.classList.toggle("open-bar");
-    });
-
-    arrow?.addEventListener("click", () => {
-      window.location.href = "province.html";
-    });
-  </script>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCwZvlhgluWctDaCy_hEiVOsDO9AbVLpnA",
@@ -339,142 +368,85 @@
 
     const params = new URLSearchParams(window.location.search);
     const provinceId = params.get('id');
-
-    // SAVE THIS provinceId for storedata.html
     localStorage.setItem("lastProvinceId", provinceId);
 
     const provinceNameEl = document.getElementById("provinceName");
-    const placesList = document.getElementById("placesList");
     const headerImg = document.querySelector(".headerImg");
     const myMaps = document.getElementById("maps");
 
-    async function loadAllData() {
-      if (!provinceId) {
-        provinceNameEl.textContent = "❌ Invalid province ID";
-        return;
-      }
+    let allPlaces = [], isExpanded = false;
+    let allCoffees = [], coffeeExpanded = false;
+    let allHotels = [], hotelExpanded = false;
+    let allRests = [], restExpanded = false;
 
+    window.addEventListener("DOMContentLoaded", loadAllData);
+
+    async function loadAllData() {
       await loadProvinceInfo(provinceId);
       await loadPlacesByProvince(provinceId);
-
-      lazyLoadSection("coffeeShop", loadcoffees, "coffeeOverlay");
+      lazyLoadSection("coffeeShop", loadCoffees, "coffeeOverlay");
       lazyLoadSection("hotels", loadHotels, "hotelOverlay");
       lazyLoadSection("restElement", loadRests, "restOverlay");
+      document.getElementById("loadingOverlay").style.display = "none";
     }
 
-    // === Show loading overlay while loading data ===
-    async function loadAllDataWithOverlay() {
-      try {
-        loadingOverlay.style.display = 'flex';
-        await loadAllData();
-      } catch (err) {
-        console.error(err);
-      } finally {
-        loadingOverlay.style.display = 'none';
-      }
-    }
-
-    window.addEventListener("DOMContentLoaded", loadAllDataWithOverlay);
-
-    // === All your Firebase load/render functions below ===
     async function loadProvinceInfo(provinceId) {
       const q = query(collection(db, "provincesCambodia"), where("provinceId", "==", provinceId));
       const snapshot = await getDocs(q);
-      if (snapshot.empty) {
-        provinceNameEl.textContent = "Province not found";
-        return;
+      if (!snapshot.empty) {
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          headerImg.innerHTML = `<img src="${data.image}" alt="${data.name}">`;
+          provinceNameEl.textContent = data.name;
+          if (data.location) {
+            const lat = data.location.lat;
+            const lng = data.location.lng;
+            myMaps.innerHTML = `<iframe src="https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed"
+              width="100%" height="450" style="border:0;" allowfullscreen loading="lazy"></iframe>`;
+          } else {
+            myMaps.innerHTML = `<p>Map not available for ${data.name}</p>`;
+          }
+        });
       }
-      snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        headerImg.innerHTML = `<img src="${data.image}" alt="${data.name}">`;
-        provinceNameEl.textContent = data.name;
-        if (data.location) {
-          const lat = data.location.lat;
-          const lng = data.location.lng;
-          myMaps.innerHTML = `<iframe src="https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed"
-          width="100%" height="450" style="border:0;" allowfullscreen loading="lazy"></iframe>`;
-        } else {
-          myMaps.innerHTML = `<p>Map not available for ${data.name}</p>`;
-        }
-      });
     }
 
-    // Your Places, Coffee, 
-
-    // ==================== Places =====================
-    let allPlaces = [], visibleCount = 6, isExpanded = false;
-    console.log("isExpanded:", isExpanded);
-
+    // ==================== PLACES =====================
     async function loadPlacesByProvince(provinceId) {
       const q = query(collection(db, "placesCambo"), where("provinceId", "==", provinceId));
-      console.log("q:",q);
-
       const snapshot = await getDocs(q);
-      console.log("snapshotPlaces:", snapshot);
-
       if (snapshot.empty) return;
       allPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      console.log("allPlaces:", allPlaces);
       renderPlaces();
     }
 
     function renderPlaces() {
+      const placesList = document.getElementById("placesList");
       placesList.innerHTML = "";
-      const showItems = isExpanded ? allPlaces : allPlaces.slice(0, visibleCount);
-      console.log("showItems:", showItems);
-
-      showItems.forEach(data => {
+      const showItems = isExpanded ? allPlaces : allPlaces.slice(0, 6);
+      showItems.forEach(item => {
         const div = document.createElement("div");
         div.className = "place-card";
+        div.setAttribute("data-id", item.id);
         div.innerHTML = `
-          <img class="detailPlace" src="${data.image}" alt="${data.name}">
+          <img class="detailPlace" src="${item.image}" alt="${item.name}">
           <div class="content">
-            <h3>${data.name}</h3>
-            <p>${data.description}</p>
-
-            <div class="myIcon">
-              <i class="fa-solid fa-heart"></i>
-            </div>
+            <h3>${item.name}</h3>
+            <p>${item.description}</p>
+            <div class="myIcon"><i class="fa-solid fa-heart"></i></div>
           </div>`;
-        placesList.appendChild(div);
-
         div.querySelector(".detailPlace").addEventListener("click", () => {
-          window.location.href = `placesdetails.html?id=${data.id}`;
+          window.location.href = `placesdetails.html?id=${item.id}`;
         });
-
-        /*
-        const hIcon = document.getElementById("myIcon");
-        hIcon.addEventListener("click", () => {
-            localStorage.setItem("favoritePlace", JSON.stringify(data));
-            window.location.href = "../html/storedata.html";
+        div.querySelector(".myIcon").addEventListener("click", e => {
+          e.stopPropagation();
+          handleFavoriteClick(div, item, "placeId", "place");
         });
-       */
-
-
-        // Store data on heart click
-        div.querySelector(".myIcon").addEventListener("click", () => {
-          console.log("div:", div);
-          // Get current favorites from localStorage, or empty array
-          let favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
-          console.log("favorites:", favorites);
-
-          // Add the new place if not already in favorites
-          if (!favorites.some(f => f.id === data.id)) {
-            favorites.push(data);
-          }
-
-          // Save back to localStorage
-          localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
-
-          alert(`${data.name} has been added to favorites!`);
-          window.location.href = "../html/storedata.html";
-        });
-
-
+        placesList.appendChild(div);
       });
-      const viewMoreBtn = document.getElementById("viewMoreBtn");
-      viewMoreBtn.textContent = isExpanded ? "View Less" : "View More";
-      viewMoreBtn.style.display = "block";
+      markFavoriteHearts();
+      const viewBtn = document.getElementById("viewMoreBtn");
+      viewBtn.textContent = isExpanded ? "View Less" : "View More";
+      viewBtn.style.display = "block";
     }
 
     document.getElementById("viewMoreBtn").addEventListener("click", () => {
@@ -482,235 +454,219 @@
       renderPlaces();
     });
 
-    // ==================== Lazy-load Helper =====================
-    function lazyLoadSection(sectionId, loadFunction, overlayId) {
-      const section = document.getElementById(sectionId);
-      const overlay = document.getElementById(overlayId);
-      const observer = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            overlay.style.display = "block";
-            loadFunction().finally(() => overlay.style.display = "none");
-            obs.unobserve(entry.target);
-          }
-        });
-      }, { root: null, threshold: 0.2 });
-      observer.observe(section);
-    }
-
-    // ==================== Coffee Shops =====================
-    let allCoffees = [], coffeeVisibleCount = 6, coffeeExpanded = false;
-
-    async function loadcoffees() {
+    // ==================== COFFEE =====================
+    async function loadCoffees() {
       const q = query(collection(db, "cafeShopCambo"), where("provinceId", "==", provinceId));
       const snapshot = await getDocs(q);
-      const myCafe = document.getElementById("coffeeShop");
-      myCafe.innerHTML = "";
       if (snapshot.empty) return;
       allCoffees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderCoffees();
     }
 
     function renderCoffees() {
-      const myCafe = document.getElementById("coffeeShop");
-      myCafe.innerHTML = "";
-      const showItems = coffeeExpanded ? allCoffees : allCoffees.slice(0, coffeeVisibleCount);
+      const section = document.getElementById("coffeeShop");
+      section.innerHTML = "";
+      const showItems = coffeeExpanded ? allCoffees : allCoffees.slice(0, 6);
 
-      showItems.forEach(coffee => {
-        const divCoffee = document.createElement("div");
-        divCoffee.classList.add("elementStyle");
-        divCoffee.style.cursor = "pointer";
-
-        const coffeeId = coffee.id || `${coffee.name.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_')}_${coffee.provinceId}`;
-
-        divCoffee.innerHTML = `
-      <img class="detailPlace" src="${coffee.image || coffee.image_placeholder}" alt="${coffee.name}">
+      showItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "elementStyle";
+        div.setAttribute("data-id", item.id);
+        div.innerHTML = `
+      <img src="${item.image || item.image_placeholder || 'default-placeholder.jpg'}" alt="${item.name}">
       <div class="content">
-        <h3>${coffee.name}</h3>
-        <p>${coffee.address}</p>
-        <p>${coffee.focus || "N/A"}</p>
+        <h3>${item.name}</h3>
+        <p>${item.address || "N/A"}</p>
+        <div class="myHeartICafe"><i class="fa-solid fa-heart"></i></div>
+      </div>`;
 
-        <div class="myHeartICafe">
-          <i class="fa-solid fa-heart"></i>
-        </div>
-      </div>
-    `;
-
-        // 🟦 MAIN CARD CLICK
-        divCoffee.addEventListener("click", () => {
-          window.location.href = `placesdetails.html?type=coffee&id=${coffeeId}`;
+        // Favorite click
+        div.querySelector(".myHeartICafe").addEventListener("click", e => {
+          e.stopPropagation();
+          handleFavoriteClick(div, item, "itemId", "coffee");
         });
 
-        // ❤️ HEART CLICK — FIXED
-        const heart = divCoffee.querySelector(".myHeartICafe");
-        heart.addEventListener("click", (event) => {
-          event.stopPropagation();  // ❗ Prevent redirect
-
-          let favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
-
-          if (!favorites.some(f => f.id === coffee.id)) {
-            favorites.push(coffee);
-          }
-
-          localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
-
-          alert(`${coffee.name} has been added to favorites!`);
-          window.location.href = "../html/storedata.html";
+        // Navigate to detail
+        div.querySelector("img").addEventListener("click", () => {
+          window.location.href = `placesdetails.html?type=coffee&id=${item.id}`;
         });
 
-        myCafe.appendChild(divCoffee);
+        section.appendChild(div);
       });
 
-      const coffeeBtn = document.getElementById("viewMoreCoffeeBtn");
-      coffeeBtn.textContent = coffeeExpanded ? "View Less" : "View More";
-      coffeeBtn.style.display = "block";
-    }
+      markFavoriteHearts();
 
+      const btn = document.getElementById("viewMoreCoffeeBtn");
+      btn.textContent = coffeeExpanded ? "View Less" : "View More";
+      btn.style.display = "block";
+    }
 
     document.getElementById("viewMoreCoffeeBtn").addEventListener("click", () => {
       coffeeExpanded = !coffeeExpanded;
       renderCoffees();
     });
 
-    // ==================== Hotels =====================
-    let allHotels = [], hotelVisibleCount = 6, hotelExpanded = false;
 
+    // ==================== HOTELS =====================
     async function loadHotels() {
       const q = query(collection(db, "hotelCambodia"), where("provinceId", "==", provinceId));
       const snapshot = await getDocs(q);
-      const myHotels = document.getElementById("hotels");
-      myHotels.innerHTML = "";
       if (snapshot.empty) return;
       allHotels = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderHotels();
     }
 
     function renderHotels() {
-      const myHotels = document.getElementById("hotels");
-      myHotels.innerHTML = "";
-      const showItems = hotelExpanded ? allHotels : allHotels.slice(0, hotelVisibleCount);
+      const section = document.getElementById("hotels");
+      section.innerHTML = "";
+      const showItems = hotelExpanded ? allHotels : allHotels.slice(0, 6);
+      showItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "elementStyle";
+        div.setAttribute("data-id", item.id);
+        div.innerHTML = `
+          <img src="${item.image || 'default.jpg'}" alt="${item.name}">
+          <div class="content">
+            <h3>${item.name}</h3>
+            <p>${item.address || "N/A"}</p>
+            <div class="myHeartIHotel"><i class="fa-solid fa-heart"></i></div>
+          </div>`;
 
-      showItems.forEach(hotel => {
-        const hotelId = hotel.id || `${hotel.name.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_')}_${hotel.provinceId}`;
-        const divHotel = document.createElement("div");
-        divHotel.classList.add("elementStyle");
-        divHotel.style.cursor = "pointer";
-
-        divHotel.innerHTML = `
-      <img class="detailPlace" src="${hotel.image || hotel.image_placeholder || 'default.jpg'}" alt="${hotel.name}">
-      <div class="content">
-        <h3>${hotel.name}</h3>
-        <p>${hotel.address || "N/A"}</p>
-        <p>${hotel.focus || "N/A"}</p>
-
-        <div class="myHeartIHotel">
-          <i class="fa-solid fa-heart"></i>
-        </div>
-      </div>
-    `;
-
-        // 🟦 MAIN HOTEL CARD CLICK (go to detail)
-        divHotel.addEventListener("click", () => {
-          window.location.href = `placesdetails.html?type=hotel&id=${hotelId}`;
+        div.querySelector(".myHeartIHotel").addEventListener("click", e => {
+          e.stopPropagation(); // prevent parent click
+          handleFavoriteClick(div, item, "itemId", "hotel");
         });
 
-        // ❤️ HEART CLICK — SAME AS COFFEE
-        const heart = divHotel.querySelector(".myHeartIHotel");
-        heart.addEventListener("click", (event) => {
-          event.stopPropagation();  // ❗ stop detail redirect
-
-          let favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
-
-          if (!favorites.some(f => f.id === hotel.id)) {
-            favorites.push(hotel);
-          }
-
-          localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
-
-          alert(`${hotel.name} has been added to favorites!`);
-          window.location.href = "../html/storedata.html";
+        // Navigate to hotel detail when clicking the image
+        div.querySelector("img").addEventListener("click", () => {
+          window.location.href = `placesdetails.html?type=hotel&id=${item.id}`;
         });
 
-        myHotels.appendChild(divHotel);
+
+
+        section.appendChild(div);
       });
-
-      const hotelBtn = document.getElementById("viewMoreHotelsBtn");
-      hotelBtn.textContent = hotelExpanded ? "View Less" : "View More";
-      hotelBtn.style.display = "block";
+      markFavoriteHearts();
+      const btn = document.getElementById("viewMoreHotelsBtn");
+      btn.textContent = hotelExpanded ? "View Less" : "View More";
+      btn.style.display = "block";
     }
 
+    document.getElementById("viewMoreHotelsBtn").addEventListener("click", () => {
+      hotelExpanded = !hotelExpanded;
+      renderHotels();
+    });
 
-    // ==================== Restaurants =====================
-    let allRests = [], restVisibleCount = 6, restExpanded = false;
-
+    // ==================== RESTAURANTS =====================
     async function loadRests() {
       const q = query(collection(db, "restaurantsCambodia"), where("provinceId", "==", provinceId));
       const snapshot = await getDocs(q);
-      const myRest = document.getElementById("restElement");
-      myRest.innerHTML = "";
       if (snapshot.empty) return;
       allRests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderRests();
     }
 
     function renderRests() {
-      const myRest = document.getElementById("restElement");
-      myRest.innerHTML = "";
-      const showItems = restExpanded ? allRests : allRests.slice(0, restVisibleCount);
-
-      showItems.forEach(rest => {
-        const restId = rest.id || `${rest.name.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_')}_${rest.provinceId}`;
-        const divRest = document.createElement("div");
-        divRest.classList.add("elementStyle");
-        divRest.style.cursor = "pointer";
-
-        divRest.innerHTML = `
-      <img class="detailPlace" src="${rest.image || rest.image_placeholder || 'default.jpg'}" alt="${rest.name}">
-      <div class="content">
-        <h3>${rest.name}</h3>
-        <p>Cuisine: ${rest.cuisine || "N/A"}</p>
-        <p>Description: ${rest.short_description}</p>
-        
-
-        <div class="myHeartICafe">
-          <i class="fa-solid fa-heart"></i>
-        </div>
-      </div>
-    `;
-
-        // 🟦 MAIN CARD CLICK
-        divRest.addEventListener("click", () => {
-          window.location.href = `placesdetails.html?type=restaurant&id=${restId}`;
+      const section = document.getElementById("restElement");
+      section.innerHTML = "";
+      const showItems = restExpanded ? allRests : allRests.slice(0, 6);
+      showItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "elementStyle";
+        div.setAttribute("data-id", item.id);
+        div.innerHTML = `
+          <img src="${item.image || 'default.jpg'}" alt="${item.name}">
+          <div class="content">
+            <h3>${item.name}</h3>
+            <p>${item.cuisine || "N/A"}</p>
+            <div class="myHeartICafe"><i class="fa-solid fa-heart"></i></div>
+          </div>`;
+        div.querySelector(".myHeartICafe").addEventListener("click", e => {
+          e.stopPropagation();
+          handleFavoriteClick(div, item, "itemId", "restaurant");
         });
 
-        // ❤️ HEART CLICK — ADD TO FAVORITES
-        const heart = divRest.querySelector(".myHeartICafe");
-        heart.addEventListener("click", (event) => {
-          event.stopPropagation(); // ❗ Stop detail redirect
-
-          let favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
-
-          if (!favorites.some(f => f.id === rest.id)) {
-            favorites.push(rest);
-          }
-
-          localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
-
-          alert(`${rest.name} has been added to favorites!`);
-          window.location.href = "../html/storedata.html";
+        div.querySelector("img").addEventListener("click", () => {
+          window.location.href = `placesdetails.html?type=restaurant&id=${item.id}`;
         });
 
-        myRest.appendChild(divRest);
+
+        section.appendChild(div);
       });
-
-      const restBtn = document.getElementById("viewMoreRestsBtn");
-      restBtn.textContent = restExpanded ? "View Less" : "View More";
-      restBtn.style.display = "block";
+      markFavoriteHearts();
+      const btn = document.getElementById("viewMoreRestsBtn");
+      btn.textContent = restExpanded ? "View Less" : "View More";
+      btn.style.display = "block";
     }
 
+    document.getElementById("viewMoreRestsBtn").addEventListener("click", () => {
+      restExpanded = !restExpanded;
+      renderRests();
+    });
 
-    window.addEventListener("DOMContentLoaded", loadAllData);
+    // ==================== FAVORITES =====================
+    async function handleFavoriteClick(div, itemData, idField = "placeId", type = "place") {
+      let favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
+      if (!favorites.some(f => f.id === itemData.id)) {
+        favorites.push(itemData);
+        localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
+        div.querySelector("i").style.color = "red";
+      }
 
+      try {
+        const userData = JSON.parse(localStorage.getItem("loggedInUser"));
+        if (!userData || !userData.id) return;
+
+        await addDoc(collection(db, "userFavorites"), {
+          userId: userData.id,
+          [idField]: itemData.id,
+          name: itemData.name,
+          address: itemData.address || "",
+          image: itemData.image || "",
+          type,
+          createdAt: new Date()
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function markFavoriteHearts() {
+      const favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
+      favorites.forEach(fav => {
+        const card = document.querySelector(`[data-id='${fav.id}']`);
+        if (card) {
+          const heartIcon = card.querySelector("i");
+          if (heartIcon) heartIcon.style.color = "red";
+        }
+      });
+    }
+
+    // ==================== LAZY LOAD HELPER =====================
+    function lazyLoadSection(sectionId, loadFunction, overlayId) {
+      const section = document.getElementById(sectionId);
+      const overlay = document.getElementById(overlayId);
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        if (overlay) overlay.style.display = "block";
+        loadFunction().finally(() => { if (overlay) overlay.style.display = "none"; });
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (overlay) overlay.style.display = "block";
+            loadFunction().finally(() => { if (overlay) overlay.style.display = "none"; });
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { root: null, threshold: 0.2 });
+
+      observer.observe(section);
+    }
   </script>
 </body>
 

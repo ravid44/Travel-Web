@@ -88,7 +88,6 @@
     <form id="authForm">
 
       <!--firstName && lastName-->
-
       <div class="input-group" id="nameFields" style="display: none;">
         <label for="firstName">First Name</label>
         <input type="text" id="firstName" placeholder="Enter first name" />
@@ -115,8 +114,25 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    // ========== FIREBASE IMPORTS ==========
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      updateDoc,
+      collection,
+      addDoc,
+      getDocs,
+      query,
+      where
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
     // Firebase config
     const firebaseConfig = {
@@ -133,26 +149,16 @@
     const db = getFirestore(app);
 
     const authForm = document.getElementById("authForm");
-    console.log("authForm:", authForm);
     const toggleLink = document.getElementById("toggleForm");
-    console.log("toggleLink:", toggleLink);
-    
     const nameFields = document.getElementById("nameFields");
-    console.log("nameFields:", nameFields);
-
     const formTitle = document.getElementById("formTitle");
-    console.log("formTitle:", formTitle);
-
     const submitBtn = document.getElementById("submitBtn");
 
     let isLogin = true; // track current form state
-    console.log("isLogin:", isLogin);
 
-
-    // Toggle between Login and Sign Up
+    // Toggle form
     toggleLink.addEventListener("click", () => {
       isLogin = !isLogin;
-
       if (isLogin) {
         nameFields.style.display = "none";
         formTitle.textContent = "Login";
@@ -164,11 +170,9 @@
         submitBtn.textContent = "Sign Up";
         toggleLink.textContent = "Already have an account? Login";
       }
-
-      console.log("nameFields:", nameFields);
-      console.log("formTitle:", formTitle);
     });
 
+    // ========== LOGIN & SIGN UP ==========
     authForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -182,45 +186,48 @@
         return;
       }
 
+      // ========== LOGIN ==========
       if (isLogin) {
-        // 🔑 Login: check if user exists in Firestore
         const q = query(collection(db, "users"), where("email", "==", email), where("password", "==", password));
-        console.log("qLogin:",q);
-
         const querySnapshot = await getDocs(q);
-        console.log("querySnapshot:", querySnapshot);
 
         if (!querySnapshot.empty) {
-          const userData = querySnapshot.docs[0].data(); // get the user object
-          localStorage.setItem("loggedInUser", JSON.stringify(userData)); // store full object
+          const userDoc = querySnapshot.docs[0];
+          const userData = { id: userDoc.id, ...userDoc.data() }; // include ID
 
+          localStorage.setItem("loggedInUser", JSON.stringify(userData)); // save with ID
           alert("✅ Login successful!");
-          window.location.href = "../province.html";
-          authForm.reset();
+          window.location.href = "../home.html";
         } else {
           alert("❌ Invalid email or password!");
         }
-      } else {
-        // 📝 Sign Up: add user to Firestore
-        try {
-          await addDoc(collection(db, "users"), {
-            firstName,
-            lastName,
-            email,
-            password,
-            createdAt: new Date()
-          });
-          alert("✅ Sign up successful! You can now login.");
-          authForm.reset();
-          toggleLink.click(); // switch to login
-        } catch (error) {
-          console.error("Error signing up:", error);
-          alert("❌ Error: " + error.message);
-        }
+        return;
+      }
+
+      // ========== SIGN UP WITH USER ID ==========
+      try {
+        const docRef = await addDoc(collection(db, "users"), {
+          firstName,
+          lastName,
+          email,
+          password,
+          createdAt: new Date()
+        });
+
+        // ➤ ADD document ID into the same document
+        await updateDoc(doc(db, "users", docRef.id), {
+          userId: docRef.id
+        });
+
+        alert(`✅ Sign up successful! Your user ID: ${docRef.id}`);
+        authForm.reset();
+        toggleLink.click(); // switch to login
+      } catch (error) {
+        console.error("Error signing up:", error);
+        alert("❌ Error: " + error.message);
       }
     });
 
   </script>
 </body>
-
 </html>
