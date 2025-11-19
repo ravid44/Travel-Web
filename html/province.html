@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <!--
        <link rel="stylesheet" href="../css/province.css">
     -->
-    
+
     <link rel="stylesheet" href="../css/home.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -15,6 +16,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
+
 <body>
 
     <!--header-->
@@ -58,7 +60,6 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
     // Firebase config
@@ -73,12 +74,11 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
     const db = getFirestore(app);
 
     const camboPro = document.getElementById("provices");
 
-    // Check localStorage for logged-in user
+    // Check if user is logged in
     function isUserLoggedIn() {
         return !!localStorage.getItem("loggedInUser");
     }
@@ -93,6 +93,9 @@
                 const div = document.createElement("div");
                 div.classList.add("province-card");
 
+                // Add data-province-id
+                div.setAttribute("data-province-id", data.provinceId);
+
                 div.innerHTML = `
                 <section data-aos="flip-down">
                     <img src="${data.image}" alt="${data.name}">
@@ -103,15 +106,23 @@
                 </section>
             `;
 
+                // ✅ Add click listener directly to the new div
                 div.addEventListener("click", () => {
-                    if (isUserLoggedIn()) {
-                        // User is logged in, go to province detail
-                        window.location.href = `provincedetail.html?id=${data.provinceId}`;
-                    } else {
-                        // User not logged in → alert and redirect
+                    const provinceId = div.getAttribute("data-province-id");
+
+                    if (!provinceId) return;
+
+                    if (!isUserLoggedIn()) {
                         alert("Please log in to view province details.");
                         window.location.href = "../html/login.html";
+                        return;
                     }
+
+                    // Save last provinceId for fallback
+                    localStorage.setItem("lastProvinceId", provinceId);
+
+                    // Navigate to province detail
+                    window.location.href = `provincedetail.html?provinceId=${provinceId}`;
                 });
 
                 camboPro.appendChild(div);

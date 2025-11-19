@@ -9,6 +9,7 @@
     integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="../css/home.css">
+  <link rel="stylesheet" href="../css/header.css">
 
   <style>
     body {
@@ -165,7 +166,7 @@
       display: none;
     }
 
-    #viewMoreBtn,
+     #viewMorePlaceBtn,
     #viewMoreCoffeeBtn,
     #viewMoreHotelsBtn,
     #viewMoreRestsBtn {
@@ -182,7 +183,7 @@
       font-size: 1.2rem;
     }
 
-    #viewMoreBtn:hover,
+     #viewMorePlaceBtn:hover,
     #viewMoreCoffeeBtn:hover,
     #viewMoreHotelsBtn:hover,
     #viewMoreRestsBtn:hover {
@@ -226,6 +227,7 @@
       /* remove your margin-left/margin-top */
     }
 
+    .myHeart i,
     .myHeartICafe i,
     .myHeartIHotel i,
     .myIcon i {
@@ -233,6 +235,7 @@
       cursor: pointer;
       transition: 0.2s;
     }
+
 
     /* Section overlay */
     .section-overlay {
@@ -246,7 +249,7 @@
       display: none;
     }
 
-    #viewMoreBtn,
+    #viewMorePlaceBtn,
     #viewMoreCoffeeBtn,
     #viewMoreHotelsBtn,
     #viewMoreRestsBtn {
@@ -262,7 +265,7 @@
       display: block;
     }
 
-    #viewMoreBtn:hover,
+    #viewMorePlaceBtn:hover,
     #viewMoreCoffeeBtn:hover,
     #viewMoreHotelsBtn:hover,
     #viewMoreRestsBtn:hover {
@@ -286,17 +289,19 @@
       font-family: Arial, sans-serif;
     }
 
+    .myHeart,
     .myIcon,
     .myHeartICafe,
     .myHeartIHotel {
       position: absolute;
-      bottom: 0.5rem;
-      right: 1rem;
+      bottom: 0.1rem;
+      right: 0.2rem;
       cursor: pointer;
       font-size: 1.5rem;
       transition: 0.2s;
     }
 
+    .myHeart i:hover,
     .myIcon i:hover,
     .myHeartICafe i:hover,
     .myHeartIHotel i:hover {
@@ -317,8 +322,9 @@
 
     <section>
       <div id="placesList"></div>
-      <button id="viewMoreBtn">View More</button>
+      <button id="viewMorePlaceBtn">View More</button>
     </section>
+
 
     <section>
       <h1>Coffee Shops</h1>
@@ -347,12 +353,16 @@
     <section id="maps"></section>
   </main>
 
-  <footer></footer>
+  <!--footer-->
+  <footer id="footer">
+  </footer>
   <script src="../js/home.js"></script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, where, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
+    // -------------------- FIREBASE --------------------
     const firebaseConfig = {
       apiKey: "AIzaSyCwZvlhgluWctDaCy_hEiVOsDO9AbVLpnA",
       authDomain: "web-travel-19d2c.firebaseapp.com",
@@ -366,9 +376,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // -------------------- GLOBALS --------------------
     const params = new URLSearchParams(window.location.search);
-    const provinceId = params.get('id');
-    localStorage.setItem("lastProvinceId", provinceId);
+    let provinceId = params.get("provinceId") || localStorage.getItem("lastProvinceId");
+
+    if (!provinceId) alert("Province not selected!");
+    else localStorage.setItem("lastProvinceId", provinceId);
 
     const provinceNameEl = document.getElementById("provinceName");
     const headerImg = document.querySelector(".headerImg");
@@ -379,8 +392,14 @@
     let allHotels = [], hotelExpanded = false;
     let allRests = [], restExpanded = false;
 
-    window.addEventListener("DOMContentLoaded", loadAllData);
+    // -------------------- INIT --------------------
+    window.addEventListener("DOMContentLoaded", async () => {
+      await loadUserFavorites();   // Load favorites first
+      await loadAllData();         // Load all sections
+      markFavoriteHearts();        // Mark red hearts
+    });
 
+    // -------------------- LOAD ALL DATA --------------------
     async function loadAllData() {
       await loadProvinceInfo(provinceId);
       await loadPlacesByProvince(provinceId);
@@ -390,259 +409,182 @@
       document.getElementById("loadingOverlay").style.display = "none";
     }
 
+    // -------------------- LOAD PROVINCE INFO --------------------
     async function loadProvinceInfo(provinceId) {
       const q = query(collection(db, "provincesCambodia"), where("provinceId", "==", provinceId));
       const snapshot = await getDocs(q);
       if (!snapshot.empty) {
-        snapshot.forEach(docSnap => {
-          const data = docSnap.data();
-          headerImg.innerHTML = `<img src="${data.image}" alt="${data.name}">`;
-          provinceNameEl.textContent = data.name;
-          if (data.location) {
-            const lat = data.location.lat;
-            const lng = data.location.lng;
-            myMaps.innerHTML = `<iframe src="https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed"
-              width="100%" height="450" style="border:0;" allowfullscreen loading="lazy"></iframe>`;
-          } else {
-            myMaps.innerHTML = `<p>Map not available for ${data.name}</p>`;
-          }
-        });
+        const data = snapshot.docs[0].data();
+        headerImg.innerHTML = `<img src="${data.image}" alt="${data.name}">`;
+        provinceNameEl.textContent = data.name;
+
+        if (data.location) {
+          const { lat, lng } = data.location;
+          myMaps.innerHTML = `<iframe src="https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed"
+        width="100%" height="450" style="border:0;" allowfullscreen loading="lazy"></iframe>`;
+        } else {
+          myMaps.innerHTML = `<p>Map not available for ${data.name}</p>`;
+        }
       }
     }
 
-    // ==================== PLACES =====================
-    async function loadPlacesByProvince(provinceId) {
-      const q = query(collection(db, "placesCambo"), where("provinceId", "==", provinceId));
-      const snapshot = await getDocs(q);
-      if (snapshot.empty) return;
-      allPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderPlaces();
-    }
-
-    function renderPlaces() {
-      const placesList = document.getElementById("placesList");
-      placesList.innerHTML = "";
-      const showItems = isExpanded ? allPlaces : allPlaces.slice(0, 6);
-      showItems.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "place-card";
-        div.setAttribute("data-id", item.id);
-        div.innerHTML = `
-          <img class="detailPlace" src="${item.image}" alt="${item.name}">
-          <div class="content">
-            <h3>${item.name}</h3>
-            <p>${item.description}</p>
-            <div class="myIcon"><i class="fa-solid fa-heart"></i></div>
-          </div>`;
-        div.querySelector(".detailPlace").addEventListener("click", () => {
-          window.location.href = `placesdetails.html?id=${item.id}`;
-        });
-        div.querySelector(".myIcon").addEventListener("click", e => {
-          e.stopPropagation();
-          handleFavoriteClick(div, item, "placeId", "place");
-        });
-        placesList.appendChild(div);
-      });
-      markFavoriteHearts();
-      const viewBtn = document.getElementById("viewMoreBtn");
-      viewBtn.textContent = isExpanded ? "View Less" : "View More";
-      viewBtn.style.display = "block";
-    }
-
-    document.getElementById("viewMoreBtn").addEventListener("click", () => {
-      isExpanded = !isExpanded;
-      renderPlaces();
-    });
-
-    // ==================== COFFEE =====================
-    async function loadCoffees() {
-      const q = query(collection(db, "cafeShopCambo"), where("provinceId", "==", provinceId));
-      const snapshot = await getDocs(q);
-      if (snapshot.empty) return;
-      allCoffees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderCoffees();
-    }
-
-    function renderCoffees() {
-      const section = document.getElementById("coffeeShop");
+    // -------------------- RENDER FUNCTION HELPER --------------------
+    function renderSection(items, containerId, type, expanded, setExpanded) {
+      const section = document.getElementById(containerId);
       section.innerHTML = "";
-      const showItems = coffeeExpanded ? allCoffees : allCoffees.slice(0, 6);
+      const showItems = expanded ? items : items.slice(0, 6);
 
       showItems.forEach(item => {
         const div = document.createElement("div");
         div.className = "elementStyle";
         div.setAttribute("data-id", item.id);
+        div.setAttribute("data-type", type);
         div.innerHTML = `
-      <img src="${item.image || item.image_placeholder || 'default-placeholder.jpg'}" alt="${item.name}">
+      <img src="${item.image || item.image_placeholder || 'default.jpg'}" alt="${item.name}">
       <div class="content">
         <h3>${item.name}</h3>
-        <p>${item.address || "N/A"}</p>
-        <div class="myHeartICafe"><i class="fa-solid fa-heart"></i></div>
+        <p>${item.address || item.description || item.cuisine || "N/A"}</p>
+        <div class="myHeart"><i class="fa-solid fa-heart"></i></div>
       </div>`;
 
-        // Favorite click
-        div.querySelector(".myHeartICafe").addEventListener("click", e => {
+        // Heart click
+        div.querySelector(".myHeart").addEventListener("click", e => {
           e.stopPropagation();
-          handleFavoriteClick(div, item, "itemId", "coffee");
+          handleFavoriteClick(div, item, type);
         });
 
         // Navigate to detail
         div.querySelector("img").addEventListener("click", () => {
-          window.location.href = `placesdetails.html?type=coffee&id=${item.id}`;
+          window.location.href = `placesdetails.html?type=${type}&id=${item.id}`;
         });
 
         section.appendChild(div);
       });
 
-      markFavoriteHearts();
+      // Handle View More button
+      const btn = document.getElementById(`viewMore${capitalize(type)}Btn`);
+      console.log(btn); // Should NOT be null now
 
-      const btn = document.getElementById("viewMoreCoffeeBtn");
-      btn.textContent = coffeeExpanded ? "View Less" : "View More";
+      if (!btn) return;
+
+      if (items.length <= 6) {
+        btn.style.display = "none";
+        return;
+      }
+
       btn.style.display = "block";
+      btn.textContent = expanded ? "View Less" : "View More";
+
+      btn.onclick = async () => {
+        const newExpanded = !expanded;   // must store new value first
+        setExpanded(newExpanded);        // update global value
+
+        if (type === "place") {
+          await loadPlacesByProvince();  // reload places first
+        }
+
+        renderSection(items, containerId, type, newExpanded, setExpanded); // use updated value
+        markFavoriteHearts();
+      };
     }
 
-    document.getElementById("viewMoreCoffeeBtn").addEventListener("click", () => {
-      coffeeExpanded = !coffeeExpanded;
-      renderCoffees();
-    });
+    // -------------------- LOAD SECTIONS --------------------
+    async function loadPlacesByProvince() {
+      const q = query(collection(db, "placesCambo"), where("provinceId", "==", provinceId));
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        allPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // Always use the CURRENT expanded value
+        renderSection(allPlaces, "placesList", "place", isExpanded, val => isExpanded = val);
+        markFavoriteHearts();
+      }
+    }
 
 
-    // ==================== HOTELS =====================
+
+    async function loadCoffees() {
+      const q = query(collection(db, "cafeShopCambo"), where("provinceId", "==", provinceId));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        allCoffees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderSection(allCoffees, "coffeeShop", "coffee", coffeeExpanded, val => coffeeExpanded = val);
+        markFavoriteHearts();
+      }
+    }
+
     async function loadHotels() {
       const q = query(collection(db, "hotelCambodia"), where("provinceId", "==", provinceId));
       const snapshot = await getDocs(q);
-      if (snapshot.empty) return;
-      allHotels = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderHotels();
+      if (!snapshot.empty) {
+        allHotels = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderSection(allHotels, "hotels", "hotel", hotelExpanded, val => hotelExpanded = val);
+        markFavoriteHearts();
+      }
     }
 
-    function renderHotels() {
-      const section = document.getElementById("hotels");
-      section.innerHTML = "";
-      const showItems = hotelExpanded ? allHotels : allHotels.slice(0, 6);
-      showItems.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "elementStyle";
-        div.setAttribute("data-id", item.id);
-        div.innerHTML = `
-          <img src="${item.image || 'default.jpg'}" alt="${item.name}">
-          <div class="content">
-            <h3>${item.name}</h3>
-            <p>${item.address || "N/A"}</p>
-            <div class="myHeartIHotel"><i class="fa-solid fa-heart"></i></div>
-          </div>`;
-
-        div.querySelector(".myHeartIHotel").addEventListener("click", e => {
-          e.stopPropagation(); // prevent parent click
-          handleFavoriteClick(div, item, "itemId", "hotel");
-        });
-
-        // Navigate to hotel detail when clicking the image
-        div.querySelector("img").addEventListener("click", () => {
-          window.location.href = `placesdetails.html?type=hotel&id=${item.id}`;
-        });
-
-
-
-        section.appendChild(div);
-      });
-      markFavoriteHearts();
-      const btn = document.getElementById("viewMoreHotelsBtn");
-      btn.textContent = hotelExpanded ? "View Less" : "View More";
-      btn.style.display = "block";
-    }
-
-    document.getElementById("viewMoreHotelsBtn").addEventListener("click", () => {
-      hotelExpanded = !hotelExpanded;
-      renderHotels();
-    });
-
-    // ==================== RESTAURANTS =====================
     async function loadRests() {
       const q = query(collection(db, "restaurantsCambodia"), where("provinceId", "==", provinceId));
       const snapshot = await getDocs(q);
-      if (snapshot.empty) return;
-      allRests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderRests();
+      if (!snapshot.empty) {
+        allRests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderSection(allRests, "restElement", "restaurant", restExpanded, val => restExpanded = val);
+        markFavoriteHearts();
+      }
     }
 
-    function renderRests() {
-      const section = document.getElementById("restElement");
-      section.innerHTML = "";
-      const showItems = restExpanded ? allRests : allRests.slice(0, 6);
-      showItems.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "elementStyle";
-        div.setAttribute("data-id", item.id);
-        div.innerHTML = `
-          <img src="${item.image || 'default.jpg'}" alt="${item.name}">
-          <div class="content">
-            <h3>${item.name}</h3>
-            <p>${item.cuisine || "N/A"}</p>
-            <div class="myHeartICafe"><i class="fa-solid fa-heart"></i></div>
-          </div>`;
-        div.querySelector(".myHeartICafe").addEventListener("click", e => {
-          e.stopPropagation();
-          handleFavoriteClick(div, item, "itemId", "restaurant");
-        });
-
-        div.querySelector("img").addEventListener("click", () => {
-          window.location.href = `placesdetails.html?type=restaurant&id=${item.id}`;
-        });
-
-
-        section.appendChild(div);
-      });
-      markFavoriteHearts();
-      const btn = document.getElementById("viewMoreRestsBtn");
-      btn.textContent = restExpanded ? "View Less" : "View More";
-      btn.style.display = "block";
-    }
-
-    document.getElementById("viewMoreRestsBtn").addEventListener("click", () => {
-      restExpanded = !restExpanded;
-      renderRests();
-    });
-
-    // ==================== FAVORITES =====================
-    async function handleFavoriteClick(div, itemData, idField = "placeId", type = "place") {
-      let favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
-      if (!favorites.some(f => f.id === itemData.id)) {
-        favorites.push(itemData);
-        localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
-        div.querySelector("i").style.color = "red";
-      }
-
-      try {
-        const userData = JSON.parse(localStorage.getItem("loggedInUser"));
-        if (!userData || !userData.id) return;
-
-        await addDoc(collection(db, "userFavorites"), {
-          userId: userData.id,
-          [idField]: itemData.id,
-          name: itemData.name,
-          address: itemData.address || "",
-          image: itemData.image || "",
-          type,
-          createdAt: new Date()
-        });
-      } catch (err) {
-        console.error(err);
-      }
+    // -------------------- FAVORITES --------------------
+    async function loadUserFavorites() {
+      const userData = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (!userData?.id) return;
+      const q = query(collection(db, "userFavorites"), where("userId", "==", userData.id));
+      const snap = await getDocs(q);
+      const favorites = snap.docs.map(doc => ({
+        fireId: doc.id,
+        itemId: doc.data().itemId,
+        type: doc.data().type
+      }));
+      localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
     }
 
     function markFavoriteHearts() {
       const favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
       favorites.forEach(fav => {
-        const card = document.querySelector(`[data-id='${fav.id}']`);
+        const card = document.querySelector(`[data-id='${fav.itemId}']`);
         if (card) {
-          const heartIcon = card.querySelector("i");
-          if (heartIcon) heartIcon.style.color = "red";
+          const heart = card.querySelector(".fa-heart");
+          if (heart) heart.style.color = "red";
         }
       });
     }
 
-    // ==================== LAZY LOAD HELPER =====================
+    async function handleFavoriteClick(cardDiv, itemData, type) {
+      const userData = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (!userData?.id) return alert("Please login first");
+
+      let favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
+      if (!favorites.some(f => f.itemId === itemData.id)) {
+        const docRef = await addDoc(collection(db, "userFavorites"), {
+          userId: userData.id,
+          itemId: itemData.id,
+          type,
+          name: itemData.name,
+          image: itemData.image || itemData.image_placeholder || "",   // <-- fixed!
+          address: itemData.address || itemData.description || itemData.cuisine || "",
+          createdAt: new Date()
+        });
+
+        favorites.push({ fireId: docRef.id, itemId: itemData.id, type });
+        localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
+
+        const heart = cardDiv.querySelector(".fa-heart");
+        if (heart) heart.style.color = "red";
+      }
+    }
+
+
+    // -------------------- LAZY LOAD --------------------
     function lazyLoadSection(sectionId, loadFunction, overlayId) {
       const section = document.getElementById(sectionId);
       const overlay = document.getElementById(overlayId);
@@ -663,11 +605,16 @@
             obs.unobserve(entry.target);
           }
         });
-      }, { root: null, threshold: 0.2 });
-
+      }, { threshold: 0.2 });
       observer.observe(section);
     }
+
+    // -------------------- UTILS --------------------
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
   </script>
+
 </body>
 
 </html>

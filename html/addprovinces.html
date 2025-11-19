@@ -199,8 +199,9 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getFirestore, collection, doc, getDocs, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, getDocs, setDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCwZvlhgluWctDaCy_hEiVOsDO9AbVLpnA",
       authDomain: "web-travel-19d2c.firebaseapp.com",
@@ -213,19 +214,14 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Image preview
+    // ------------------ Image Preview ------------------
     function setupImagePreview(inputId, imgId) {
       const input = document.getElementById(inputId);
-      console.log("inputImg:", input);
-
       const preview = document.getElementById(imgId);
-      console.log("previewImg:", preview);
-
       if (!input || !preview) return;
+
       input.addEventListener('input', () => {
         const url = input.value.trim();
-        console.log("imgUrl:", url);
-
         if (url) {
           preview.src = url;
           preview.style.display = 'block';
@@ -233,8 +229,6 @@
           preview.style.display = 'none';
           preview.src = '';
         }
-
-        console.log("imagePreview:", preview);
       });
     }
 
@@ -243,14 +237,12 @@
     setupImagePreview('proImageHotel', 'imagePreviewHotel');
     setupImagePreview('proImageRestaurant', 'imagePreviewRestaurant');
 
-    // Form visibility
+    // ------------------ Form Visibility ------------------
     const categorySelect = document.getElementById('items');
     const groups = document.querySelectorAll('.group');
-    console.log("groups:", groups);
 
     function updateFormVisibility() {
       const selected = categorySelect.value;
-      console.log("selected:", selected);
 
       groups.forEach(g => g.style.display = 'none');
       document.querySelectorAll('img[id^="imagePreview"]').forEach(img => img.style.display = 'none');
@@ -264,15 +256,26 @@
     categorySelect.addEventListener('change', updateFormVisibility);
     window.addEventListener('DOMContentLoaded', updateFormVisibility);
 
-    // Submit handler
+    // ------------------ Duplicate Check ------------------
+    async function isDuplicate(collectionName, name, provinceId) {
+      const q = query(
+        collection(db, collectionName),
+        where("name", "==", name),
+        where("provinceId", "==", provinceId)
+      );
+      const snap = await getDocs(q);
+      return !snap.empty;
+    }
+
+    // ------------------ Form Submit ------------------
     const addForm = document.getElementById('addProForm');
+
     addForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const selected = categorySelect.value;
       const btn = document.getElementById('btnAddPro');
       btn.disabled = true;
       btn.textContent = 'Adding...';
-      console.log("btn:", btn);
 
       try {
         const provinceInput = document.getElementById('provinceName').value.trim();
@@ -281,33 +284,26 @@
           return;
         }
         const normalizedInput = provinceInput.toLowerCase().replace(/\s+/g, '');
-        console.log("normalizedInput:", normalizedInput);
 
         const provincesRef = collection(db, "provincesCambodia");
         const snapshot = await getDocs(provincesRef);
-        console.log("snapshot:", snapshot);
 
         let matchedProvince = null;
-
-
         snapshot.forEach(docSnap => {
           const firestoreName = docSnap.data().name?.toLowerCase().replace(/\s+/g, '');
-          console.log("firestoreName:", firestoreName);
-          
-          if (firestoreName === normalizedInput)
-            matchedProvince = { id: docSnap.id, ...docSnap.data() };
-            console.log("matchedProvince:", matchedProvince);
+          if (firestoreName === normalizedInput) matchedProvince = { id: docSnap.id, ...docSnap.data() };
         });
 
         if (!matchedProvince) {
           alert("⚠️ Province not found!");
           return;
         }
-        const provinceId = matchedProvince.provinceId || matchedProvince.id;
-        console.log("provinceId:", provinceId);
 
-        // Handle each category
+        const provinceId = matchedProvince.provinceId || matchedProvince.id;
+
         let docRef;
+
+        // ------------------ Hotels ------------------
         if (selected === "Hotels") {
           const name = document.getElementById('hotelName').value.trim();
           const image = document.getElementById('proImageHotel').value.trim();
@@ -315,10 +311,17 @@
           const price = document.getElementById('priceRange').value.trim();
           const description = document.getElementById('hotelDescription').value.trim();
           const address = document.getElementById('hotelAddress').value.trim();
+
           if (!name || !image || !focus || !price || !description || !address) {
             alert("❌ Please fill all hotel fields!");
             return;
           }
+
+          if (await isDuplicate("hotelCambodia", name, provinceId)) {
+            alert("⚠️❗ This hotel already exists in this province!");
+            return;
+          }
+
           docRef = doc(collection(db, "hotelCambodia"));
           await setDoc(docRef, {
             hotelId: docRef.id,
@@ -329,14 +332,23 @@
             updated_at: serverTimestamp()
           });
           alert("✅ Hotel added successfully!");
+
+          // ------------------ Places ------------------
         } else if (selected === "Places for Visited") {
           const name = document.getElementById('placeName').value.trim();
           const image = document.getElementById('proImage').value.trim();
           const description = document.getElementById('description').value.trim();
+
           if (!name || !image || !description) {
             alert("❌ Please fill all place fields!");
             return;
           }
+
+          if (await isDuplicate("placesCambo", name, provinceId)) {
+            alert("⚠️❗ This place already exists in this province!");
+            return;
+          }
+
           docRef = doc(collection(db, "placesCambo"));
           await setDoc(docRef, {
             placeId: docRef.id,
@@ -347,15 +359,24 @@
             updated_at: serverTimestamp()
           });
           alert("✅ Place added successfully!");
+
+          // ------------------ Coffee Shop ------------------
         } else if (selected === "Coffee Shop") {
           const name = document.getElementById('coffeeName').value.trim();
           const image = document.getElementById('proImageCoffee').value.trim();
           const focus = document.getElementById('focusCoffee').value.trim();
           const address = document.getElementById('coffeeAddress').value.trim();
+
           if (!name || !image || !focus || !address) {
             alert("❌ Please fill all coffee shop fields!");
             return;
           }
+
+          if (await isDuplicate("cafeShopCambo", name, provinceId)) {
+            alert("⚠️❗ This coffee shop already exists in this province!");
+            return;
+          }
+
           docRef = doc(collection(db, "cafeShopCambo"));
           await setDoc(docRef, {
             coffeeId: docRef.id,
@@ -366,16 +387,25 @@
             updated_at: serverTimestamp()
           });
           alert("✅ Coffee shop added successfully!");
+
+          // ------------------ Restaurants ------------------
         } else if (selected === "Restaurants") {
           const name = document.getElementById('restaurantName').value.trim();
           const image = document.getElementById('proImageRestaurant').value.trim();
           const cuisine = document.getElementById('cuisine').value.trim();
           const rating = document.getElementById('rating').value.trim();
           const description = document.getElementById('shortDescription').value.trim();
+
           if (!name || !image || !cuisine || !rating || !description) {
             alert("❌ Please fill all restaurant fields!");
             return;
           }
+
+          if (await isDuplicate("restaurantsCambodia", name, provinceId)) {
+            alert("⚠️❗ This restaurant already exists in this province!");
+            return;
+          }
+
           docRef = doc(collection(db, "restaurantsCambodia"));
           await setDoc(docRef, {
             restaurantId: docRef.id,
@@ -388,7 +418,7 @@
           alert("✅ Restaurant added successfully!");
         }
 
-        // Reset form & previews
+        // ------------------ Reset form & previews ------------------
         addForm.reset();
         updateFormVisibility();
         document.querySelectorAll('img[id^="imagePreview"]').forEach(img => img.style.display = 'none');
@@ -402,6 +432,7 @@
       }
     });
   </script>
+
 </body>
 
 </html>

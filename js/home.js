@@ -47,6 +47,43 @@ fetch('../html/header.html')
       myUserInfor.textContent = `Hello! ${fGetUserInfor.firstName} ${fGetUserInfor.lastName}`;
     }
 
+      // Assuming you already have:
+      
+      const logOutBtn = document.getElementById("myUserLogOut");
+
+      logOutBtn.addEventListener("click", () => {
+        const getUserName = localStorage.getItem("loggedInUser");
+
+        if (!getUserName) {
+          alert("You are not logged in.");
+          return;
+        }
+
+        const confirmLogout = confirm("Are you sure you want to log out?");
+        if (!confirmLogout) return;
+
+        // Clear user-related data
+        localStorage.removeItem("loggedInUser");
+        localStorage.removeItem("favoritePlaces");
+        localStorage.removeItem("lastProvinceId"); // optional if you track last viewed province
+
+        // Clear displayed username
+        if (myUserInfor) {
+          myUserInfor.textContent = "";
+        }
+
+        // Clear favorites section in the page
+        const placeDataDiv = document.getElementById("placeData");
+        if (placeDataDiv) {
+          placeDataDiv.innerHTML = "<p>You have logged out.</p>";
+        }
+
+        alert("You have successfully logged out.");
+
+        // Optional: redirect to homepage or login page
+        window.location.href = "home.html";
+      });
+
 
   })
   .catch(err => console.error("Error loading header:", err));
