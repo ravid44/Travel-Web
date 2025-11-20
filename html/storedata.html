@@ -256,6 +256,8 @@
                     const parent = btn.closest(".inforData");
                     parent.classList.add("deleting");
 
+                    console.log("parent:",parent);
+
                     setTimeout(async () => {
                         const fireId = parent.getAttribute("data-fire-id");
                         const itemId = parent.getAttribute("data-id");
