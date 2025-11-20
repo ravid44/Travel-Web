@@ -81,7 +81,7 @@ fetch('../html/header.html')
         alert("You have successfully logged out.");
 
         // Optional: redirect to homepage or login page
-        window.location.href = "home.html";
+        window.location.href = "../home.html";
       });
 
 

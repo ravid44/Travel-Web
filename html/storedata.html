@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Favorite Places</title>
     <link rel="shortcut icon" href="../images/khmer flag.jpg" type="image/x-icon">
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
@@ -58,8 +57,8 @@
         /* Favorites Grid */
         #placeData {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(3,30%);
+            gap: 3rem;
             justify-content: center;
             margin-top: 5rem;
         }
@@ -70,6 +69,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             position: relative;
+            width: 100%;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
@@ -116,7 +116,6 @@
             color: red;
         }
 
-        
     </style>
 </head>
 
@@ -164,12 +163,15 @@
 
         const backArrow = document.getElementById("myArrow");
         const placeDataDiv = document.getElementById("placeData");
+        console.log("placeDataDiv:", placeDataDiv);
 
         // Back button
         backArrow.addEventListener("click", () => history.back());
+        console.log("backArrow:", backArrow);
 
         // User data
         const userData = JSON.parse(localStorage.getItem("loggedInUser"));
+        console.log("userData:", userData);
 
         // Favorites helpers
         function getFavorites() {
@@ -185,10 +187,14 @@
             if (!userData || !userData.id) {
                 placeDataDiv.innerHTML = "<p>Please log in first.</p>";
                 return;
+                
             }
 
             const q = query(collection(db, "userFavorites"), where("userId", "==", userData.id));
+            console.log("qLoadFav:",q);
+
             const snap = await getDocs(q);
+            console.log("snapLoadFav:", snap);
 
             if (snap.empty) {
                 placeDataDiv.innerHTML = "<p>No favorite places yet.</p>";
@@ -199,6 +205,8 @@
             let favs = [];
             snap.forEach(docu => {
                 const data = docu.data();
+                console.log("dataLoadFav:",data);
+
                 favs.push({
                     id: data.itemId,
                     type: data.type,
@@ -207,6 +215,8 @@
                     address: data.address || "",
                     fireId: docu.id
                 });
+
+                console.log("favs:",favs);
             });
 
             // Sort by type then name
@@ -231,6 +241,12 @@
 
             saveFavorites(favs);
             attachDeleteButtons();
+            console.log("dataDiv:", placeDataDiv);
+
+            setTimeout(() => {
+                document.querySelectorAll('.newItem').forEach(el => el.classList.remove('newItem'));
+            }, 500);
+
         }
 
         // Delete favorites
@@ -238,23 +254,23 @@
             document.querySelectorAll(".myDIcon").forEach(btn => {
                 btn.addEventListener("click", async () => {
                     const parent = btn.closest(".inforData");
-                    const fireId = parent.getAttribute("data-fire-id");
-                    const itemId = parent.getAttribute("data-id");
-                    const type = parent.getAttribute("data-type");
+                    parent.classList.add("deleting");
 
-                    // Delete Firestore
-                    await deleteDoc(doc(db, "userFavorites", fireId));
+                    setTimeout(async () => {
+                        const fireId = parent.getAttribute("data-fire-id");
+                        const itemId = parent.getAttribute("data-id");
+                        const type = parent.getAttribute("data-type");
 
-                    // Delete localStorage
-                    let favorites = getFavorites();
-                    favorites = favorites.filter(f => !(f.id === itemId && f.type === type));
-                    saveFavorites(favorites);
+                        await deleteDoc(doc(db, "userFavorites", fireId));
 
-                    // Remove DOM
-                    parent.remove();
+                        let favorites = getFavorites();
+                        favorites = favorites.filter(f => !(f.id === itemId && f.type === type));
+                        saveFavorites(favorites);
 
-                    // Sync hearts if needed
-                    window.dispatchEvent(new Event("favoritesUpdated"));
+                        parent.remove();
+                        window.dispatchEvent(new Event("favoritesUpdated"));
+
+                    }, 400);
                 });
             });
         }
