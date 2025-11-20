@@ -106,26 +106,26 @@
                 </section>
             `;
 
-                // ✅ Add click listener directly to the new div
-                div.addEventListener("click", () => {
-                    const provinceId = div.getAttribute("data-province-id");
+                    // ✅ Add click listener directly to the new div
+                    div.addEventListener("click", () => {
+                        const provinceId = div.getAttribute("data-province-id");
 
-                    if (!provinceId) return;
+                        if (!provinceId) return;
 
-                    if (!isUserLoggedIn()) {
-                        alert("Please log in to view province details.");
-                        window.location.href = "../html/login.html";
-                        return;
-                    }
+                        if (!isUserLoggedIn()) {
+                            alert("Please log in to view province details.");
+                            window.location.href = "../html/login.html";
+                            return;
+                        }
 
-                    // Save last provinceId for fallback
-                    localStorage.setItem("lastProvinceId", provinceId);
+                        // Save last provinceId for fallback
+                        localStorage.setItem("lastProvinceId", provinceId);
 
-                    // Navigate to province detail
-                    window.location.href = `provincedetail.html?provinceId=${provinceId}`;
-                });
+                        // Navigate to province detail
+                        window.location.href = `../html/provincedetail.html?provinceId=${provinceId}`;
+                    });
 
-                camboPro.appendChild(div);
+                    camboPro.appendChild(div);
             });
 
         } catch (err) {
