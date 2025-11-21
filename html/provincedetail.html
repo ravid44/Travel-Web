@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Province Detail</title>
-    
+
   <link rel="shortcut icon" href="../images/khmer flag.jpg" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
     integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
@@ -168,7 +168,7 @@
       display: none;
     }
 
-     #viewMorePlaceBtn,
+    #viewMorePlaceBtn,
     #viewMoreCoffeeBtn,
     #viewMoreHotelsBtn,
     #viewMoreRestsBtn {
@@ -185,7 +185,7 @@
       font-size: 1.2rem;
     }
 
-     #viewMorePlaceBtn:hover,
+    #viewMorePlaceBtn:hover,
     #viewMoreCoffeeBtn:hover,
     #viewMoreHotelsBtn:hover,
     #viewMoreRestsBtn:hover {
@@ -302,7 +302,16 @@
       font-size: 1.5rem;
       transition: 0.2s;
     }
-    
+
+    .myHeart {
+      transition: color 0.2s ease-in-out, transform 0.2s;
+    }
+
+    .myHeart:active {
+      transform: scale(1.2);
+    }
+
+
     /*
     .myHeart i:hover,
     .myIcon i:hover,
@@ -399,7 +408,7 @@
     let allHotels = [], hotelExpanded = false;
     let allRests = [], restExpanded = false;
 
-  
+
 
     // -------------------- INIT --------------------
     window.addEventListener("DOMContentLoaded", async () => {
@@ -428,7 +437,7 @@
 
       if (!snapshot.empty) {
         const data = snapshot.docs[0].data();
-        console.log("dataIn",data);
+        console.log("dataIn", data);
 
         headerImg.innerHTML = `<img src="${data.image}" alt="${data.name}">`;
         provinceNameEl.textContent = data.name;
@@ -442,7 +451,7 @@
         } else {
           myMaps.innerHTML = `<p>Map not available for ${data.name}</p>`;
         }
-        
+
         console.log("MapPro:", myMaps);
       }
     }
@@ -467,7 +476,7 @@
         <div class="myHeart"><i class="fa-solid fa-heart"></i></div>
       </div>`;
 
-      console.log("divRenderSec:", div);
+        console.log("divRenderSec:", div);
 
         // Heart click
         div.querySelector(".myHeart").addEventListener("click", e => {
@@ -516,7 +525,7 @@
       const q = query(collection(db, "placesCambo"), where("provinceId", "==", provinceId));
       console.log("qPlaces:", q);
       const snapshot = await getDocs(q);
-      
+
 
       if (!snapshot.empty) {
         allPlaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -566,7 +575,7 @@
       console.log("userData:", userData);
       if (!userData?.id) return;
       const q = query(collection(db, "userFavorites"), where("userId", "==", userData.id));
-      console.log("qUserFav:",q);
+      console.log("qUserFav:", q);
 
       const snap = await getDocs(q);
       console.log("snapUserFav:", snap);
@@ -586,7 +595,7 @@
 
       favorites.forEach(fav => {
         const card = document.querySelector(`[data-id='${fav.itemId}']`);
-        console.log("card:",card);
+        console.log("card:", card);
         if (card) {
           const heart = card.querySelector(".fa-heart");
           if (heart) heart.style.color = "red";
@@ -598,26 +607,58 @@
     async function handleFavoriteClick(cardDiv, itemData, type) {
       const userData = JSON.parse(localStorage.getItem("loggedInUser"));
       if (!userData?.id) return alert("Please login first");
+      console.log("userData:", userData);
 
       let favorites = JSON.parse(localStorage.getItem("favoritePlaces")) || [];
-      if (!favorites.some(f => f.itemId === itemData.id)) {
-        const docRef = await addDoc(collection(db, "userFavorites"), {
-          userId: userData.id,
-          itemId: itemData.id,
-          type,
-          name: itemData.name,
-          image: itemData.image || itemData.image_placeholder || "",   // <-- fixed!
-          address: itemData.address || itemData.description || itemData.cuisine || "",
-          createdAt: new Date()
-        });
+      const heart = cardDiv.querySelector(".myHeart");
 
-        favorites.push({ fireId: docRef.id, itemId: itemData.id, type });
-        localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
+      const existing = favorites.find(f => f.itemId === itemData.id);
+      console.log("existingFav:",existing);
 
-        const heart = cardDiv.querySelector(".fa-heart");
-        if (heart) heart.style.color = "red";
+      // ⏩ 1) INSTANT UI UPDATE – FASTER CLICK RESPONSE
+      if (!existing) {
+        heart.style.color = "red"; // Turn RED instantly
+      } else {
+        heart.style.color = ""; // Turn back to default instantly
       }
+
+      // ⛔ Prevent double click while processing
+      heart.style.pointerEvents = "none";
+
+      try {
+        if (!existing) {
+          // ADD TO FIREBASE
+          const docRef = await addDoc(collection(db, "userFavorites"), {
+            userId: userData.id,
+            itemId: itemData.id,
+            type,
+            name: itemData.name,
+            image: itemData.image || itemData.image_placeholder || "",
+            address: itemData.address || itemData.description || itemData.cuisine || "",
+            createdAt: new Date()
+          });
+
+          console.log("docRefFav:",docRef);
+
+          favorites.push({ fireId: docRef.id, itemId: itemData.id, type });
+          localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
+        } else {
+          // REMOVE FROM FIREBASE
+          await deleteDoc(doc(db, "userFavorites", existing.fireId));
+
+          favorites = favorites.filter(f => f.itemId !== itemData.id);
+          localStorage.setItem("favoritePlaces", JSON.stringify(favorites));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      // ✔ Re-enable clicking
+      heart.style.pointerEvents = "auto";
     }
+
+
+
 
 
     // -------------------- LAZY LOAD --------------------
